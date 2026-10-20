@@ -5,6 +5,8 @@ const statusConfig = {
   Pending: { label: 'Tertunda', className: 'bg-warning-50 text-warning-700 dark:bg-warning-950/30 dark:text-warning-400' },
   Returned: { label: 'Dikembalikan', className: 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400' },
   Mendesak: { label: 'Mendesak', className: 'bg-danger-50 text-danger-700 dark:bg-danger-950/30 dark:text-danger-400' },
+  'Restock Segera': { label: 'Restock Segera', className: 'bg-danger-50 text-danger-700 dark:bg-danger-950/30 dark:text-danger-400' },
+  Pantau: { label: 'Pantau', className: 'bg-warning-50 text-warning-700 dark:bg-warning-950/30 dark:text-warning-400' },
   Aman: { label: 'Aman', className: 'bg-success-50 text-success-700 dark:bg-success-950/30 dark:text-success-400' },
 };
 

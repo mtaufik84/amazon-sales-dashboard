@@ -28,6 +28,11 @@ export default function StockPlanTable({ data, loading }) {
   const [statusFilter, setStatusFilter] = useState('all');
   const { showToast } = useToast();
 
+  const URGENCY_OPTIONS = useMemo(
+    () => ['all', ...new Set((data || []).map((r) => r.status))],
+    [data]
+  );
+
   const sorted = useMemo(() => {
     let filtered = data;
     if (statusFilter !== 'all') {
@@ -51,12 +56,12 @@ export default function StockPlanTable({ data, loading }) {
     }
   };
 
-  const totalCost = data.reduce((sum, r) => sum + r.estimatedReorderCost, 0);
-  const urgentCount = data.filter((r) => r.status === 'Mendesak').length;
+  const totalCost = data.reduce((sum, r) => sum + (r.estimatedReorderCost || 0), 0);
+  const urgentCount = data.filter((r) => r.status === 'Restock Segera').length;
 
   const handleCopy = () => {
     const text = sorted.map((r) =>
-      `${r.sku}\t${r.category}\t${r.size}\t${r.ads}\t${r.forecast14d}\t${r.safetyStock}\t${r.reorderPoint}\t${r.status}\t${r.estimatedReorderCost}`
+      `${r.sku}\t${r.category}\t${r.size}\t${r.ads.toFixed(1)}\t${r.forecast14d}\t${r.safetyStock}\t${r.reorderPoint}\t${r.status}\t${r.estimatedReorderCost}`
     ).join('\n');
     navigator.clipboard.writeText(`SKU\tKategori\tUkuran\tADS\tRamalan 14h\tSafety Stock\tROP\tStatus\tBiaya\n${text}`);
     showToast('Rencana pembelian disalin ke clipboard');
@@ -80,6 +85,7 @@ export default function StockPlanTable({ data, loading }) {
     return <div className="skeleton h-[400px] w-full rounded-lg" />;
   }
 
+  // Kolom dari API asli: currentStock disertakan di tabel kosong, qty tidak ada.
   return (
     <div>
       {/* Summary strip */}
@@ -90,7 +96,7 @@ export default function StockPlanTable({ data, loading }) {
         </div>
         <div className="w-px h-8 bg-default" />
         <div>
-          <span className="text-2xs text-muted-c uppercase tracking-wider">Mendesak</span>
+          <span className="text-2xs text-muted-c uppercase tracking-wider">Restock Segera</span>
           <div className="text-sm font-semibold text-danger-600 dark:text-danger-400 tabular-nums">{urgentCount} SKU</div>
         </div>
         <div className="w-px h-8 bg-default" />
@@ -99,9 +105,9 @@ export default function StockPlanTable({ data, loading }) {
           <div className="text-sm font-semibold text-primary-c tabular-nums">{formatINR(totalCost)}</div>
         </div>
         <div className="flex-1" />
-        {/* Status filter */}
+        {/* Status filter — nilai urgency asli dari API */}
         <div className="flex items-center gap-1.5">
-          {['all', 'Mendesak', 'Aman'].map((s) => (
+          {URGENCY_OPTIONS.map((s) => (
             <button
               key={s}
               onClick={() => setStatusFilter(s)}
