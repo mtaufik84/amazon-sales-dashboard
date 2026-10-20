@@ -1,13 +1,66 @@
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { X } from 'lucide-react';
-import IndiaClusterMap from '../components/IndiaClusterMap.jsx';
+import IndiaGeoMap from '../components/IndiaGeoMap.jsx';
 import ClusterTable from '../components/ClusterTable.jsx';
-import { geo, clusters } from '../mocks/geo.js';
+import { getMLSegments, getMLSegmentsGeojson } from '../services/api.js';
 import { formatINR, formatINRCompact, formatNumber, formatPercent } from '../lib/format.js';
 
+// Data peta: GET /api/segments + /api/segments/geojson (GeoJSON kaya klaster),
+// persis versi lama. Skala disamakan dengan mock referensi:
+// cancellation_rate & fba dikonversi ke persen (0,112 → 11,2) supaya komponen
+// referensi (threshold > 15) tetap jalan tanpa diubah.
 export default function RegionMapPage() {
   const [selectedCluster, setSelectedCluster] = useState(null);
   const [drawerState, setDrawerState] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [segments, setSegments] = useState(null);
+  const [geoJson, setGeoJson] = useState(null);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  useEffect(() => {
+    let alive = true;
+    setLoading(true);
+    setError(null);
+    Promise.all([getMLSegments(), getMLSegmentsGeojson()])
+      .then(([segData, geojson]) => {
+        if (!alive) return;
+        setSegments(segData);
+        setGeoJson(geojson);
+      })
+      .catch((err) => {
+        if (!alive) return;
+        console.error('Gagal memuat segmentasi:', err);
+        setError('Data segmentasi tidak dapat dimuat. Pastikan backend berjalan.');
+      })
+      .finally(() => {
+        if (alive) setLoading(false);
+      });
+    return () => { alive = false; };
+  }, [refreshKey]);
+
+  const { clusters, geoData } = useMemo(() => {
+    if (!segments) return { clusters: {}, geoData: [] };
+    const normClusters = {};
+    Object.entries(segments.clusters || {}).forEach(([id, c]) => {
+      normClusters[String(id)] = {
+        ...c,
+        avg_metrics: {
+          ...c.avg_metrics,
+          cancellation_rate: (c.avg_metrics?.cancellation_rate || 0) * 100,
+          fba_share: (c.avg_metrics?.fba_ratio || 0) * 100,
+        },
+      };
+    });
+    const geo = Object.entries(segments.state_lookup || {}).map(([state, s]) => ({
+      state,
+      cluster: String(s.cluster_id),
+      revenue: s.metrics?.total_revenue || 0,
+      orders: s.metrics?.total_orders || 0,
+      metrics: s.metrics,
+    }));
+    return { clusters: normClusters, geoData: geo };
+  }, [segments]);
 
   const handleStateClick = (state) => {
     setDrawerState(state);
@@ -20,64 +73,90 @@ export default function RegionMapPage() {
         <p className="text-sm text-muted-c mt-0.5">Analisis cluster geografis berdasarkan performa penjualan</p>
       </div>
 
-      {/* Map + Cluster legend */}
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
-        <div className="lg:col-span-3 bg-surface border border-default rounded-lg p-5">
-          <IndiaClusterMap
-            geoData={geo}
-            clusters={clusters}
-            onStateClick={handleStateClick}
-            selectedCluster={selectedCluster}
-          />
+      {/* Error state */}
+      {error && (
+        <div className="bg-surface border border-danger-200 dark:border-danger-800 rounded-lg p-8 text-center">
+          <p className="text-sm text-secondary-c">{error}</p>
+          <button
+            onClick={() => setRefreshKey((k) => k + 1)}
+            className="mt-3 px-4 py-2 rounded-md text-xs font-medium bg-accent-500 text-white hover:bg-accent-600 transition-colors focus-ring"
+          >
+            Coba Lagi
+          </button>
         </div>
+      )}
 
-        {/* Cluster cards */}
-        <div className="lg:col-span-2 space-y-3">
-          <h3 className="text-sm font-medium text-primary-c">Ringkasan Cluster</h3>
-          {Object.entries(clusters).map(([id, c]) => {
-            const isDimmed = selectedCluster !== null && selectedCluster !== id;
-            return (
-              <button
-                key={id}
-                onClick={() => setSelectedCluster(selectedCluster === id ? null : id)}
-                className={`w-full text-left bg-surface border rounded-lg p-4 transition-all hover:border-accent-300 dark:hover:border-accent-700 ${
-                  selectedCluster === id ? 'border-accent-300 dark:border-accent-700 ring-1 ring-accent-200 dark:ring-accent-800' : 'border-default'
-                } ${isDimmed ? 'opacity-50' : ''}`}
-              >
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="w-3 h-3 rounded-full" style={{ backgroundColor: c.color }} />
-                  <span className="text-sm font-medium text-primary-c">{c.label}</span>
-                  <span className="text-2xs text-muted-c ml-auto">{c.state_count} negara</span>
+      {!error && (
+        <>
+          {/* Map + Cluster legend */}
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+            <div className="lg:col-span-3 bg-surface border border-default rounded-lg p-5">
+              <IndiaGeoMap
+                geojsonData={geoJson}
+                geoData={geoData}
+                clusters={clusters}
+                onStateClick={handleStateClick}
+                selectedCluster={selectedCluster}
+                loading={loading}
+              />
+            </div>
+
+            {/* Cluster cards */}
+            <div className="lg:col-span-2 space-y-3">
+              <h3 className="text-sm font-medium text-primary-c">Ringkasan Cluster</h3>
+              {loading && (
+                <div className="space-y-3">
+                  <div className="skeleton h-16 w-full rounded-lg" />
+                  <div className="skeleton h-16 w-full rounded-lg" />
+                  <div className="skeleton h-16 w-full rounded-lg" />
                 </div>
-                <div className="grid grid-cols-3 gap-2 text-xs">
-                  <div>
-                    <div className="text-2xs text-muted-c">Avg Pendapatan</div>
-                    <div className="text-primary-c tabular-nums font-medium">{formatINRCompact(c.avg_metrics.avg_revenue)}</div>
-                  </div>
-                  <div>
-                    <div className="text-2xs text-muted-c">Pembatalan</div>
-                    <div className={`tabular-nums font-medium ${c.avg_metrics.cancellation_rate > 15 ? 'text-danger-600 dark:text-danger-400' : 'text-primary-c'}`}>
-                      {formatPercent(c.avg_metrics.cancellation_rate)}
+              )}
+              {!loading && Object.entries(clusters).map(([id, c]) => {
+                const isDimmed = selectedCluster !== null && selectedCluster !== id;
+                return (
+                  <button
+                    key={id}
+                    onClick={() => setSelectedCluster(selectedCluster === id ? null : id)}
+                    className={`w-full text-left bg-surface border rounded-lg p-4 transition-all hover:border-accent-300 dark:hover:border-accent-700 ${
+                      selectedCluster === id ? 'border-accent-300 dark:border-accent-700 ring-1 ring-accent-200 dark:ring-accent-800' : 'border-default'
+                    } ${isDimmed ? 'opacity-50' : ''}`}
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="w-3 h-3 rounded-full" style={{ backgroundColor: c.color }} />
+                      <span className="text-sm font-medium text-primary-c">{c.label}</span>
+                      <span className="text-2xs text-muted-c ml-auto">{c.state_count} negara</span>
                     </div>
-                  </div>
-                  <div>
-                    <div className="text-2xs text-muted-c">FBA Share</div>
-                    <div className="text-primary-c tabular-nums font-medium">{formatPercent(c.avg_metrics.fba_share)}</div>
-                  </div>
-                </div>
-              </button>
-            );
-          })}
-        </div>
-      </div>
+                    <div className="grid grid-cols-3 gap-2 text-xs">
+                      <div>
+                        <div className="text-2xs text-muted-c">Avg Pendapatan</div>
+                        <div className="text-primary-c tabular-nums font-medium">{formatINRCompact(c.avg_metrics.avg_revenue)}</div>
+                      </div>
+                      <div>
+                        <div className="text-2xs text-muted-c">Pembatalan</div>
+                        <div className={`tabular-nums font-medium ${c.avg_metrics.cancellation_rate > 15 ? 'text-danger-600 dark:text-danger-400' : 'text-primary-c'}`}>
+                          {formatPercent(c.avg_metrics.cancellation_rate)}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-2xs text-muted-c">FBA Share</div>
+                        <div className="text-primary-c tabular-nums font-medium">{formatPercent(c.avg_metrics.fba_share)}</div>
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
 
-      {/* Cluster comparison table */}
-      <ClusterTable
-        clusters={clusters}
-        geoData={geo}
-        selectedCluster={selectedCluster}
-        onClusterToggle={setSelectedCluster}
-      />
+          {/* Cluster comparison table */}
+          <ClusterTable
+            clusters={clusters}
+            geoData={geoData}
+            selectedCluster={selectedCluster}
+            onClusterToggle={setSelectedCluster}
+          />
+        </>
+      )}
 
       {/* State detail drawer */}
       {drawerState && (
@@ -108,13 +187,14 @@ export default function RegionMapPage() {
                 </div>
                 <div className="bg-subtle rounded-md p-3">
                   <div className="text-2xs text-muted-c uppercase tracking-wider">Avg Nilai Pesanan</div>
-                  <div className="text-sm font-semibold text-primary-c tabular-nums mt-1">₹{formatNumber(Math.round(drawerState.revenue / drawerState.orders))}</div>
+                  <div className="text-sm font-semibold text-primary-c tabular-nums mt-1">
+                    ₹{formatNumber(drawerState.orders > 0 ? Math.round(drawerState.revenue / drawerState.orders) : 0)}
+                  </div>
                 </div>
                 <div className="bg-subtle rounded-md p-3">
-                  <div className="text-2xs text-muted-c uppercase tracking-wider">Cluster</div>
-                  <div className="text-sm font-semibold mt-1 flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: clusters[drawerState.cluster]?.color }} />
-                    <span className="text-primary-c">{clusters[drawerState.cluster]?.label}</span>
+                  <div className="text-2xs text-muted-c uppercase tracking-wider">Pembatalan</div>
+                  <div className="text-sm font-semibold text-primary-c tabular-nums mt-1">
+                    {formatPercent((drawerState.metrics?.cancellation_rate || 0) * 100)}
                   </div>
                 </div>
               </div>
@@ -125,8 +205,13 @@ export default function RegionMapPage() {
                 <div className="space-y-2">
                   {(() => {
                     const c = clusters[drawerState.cluster];
-                    const revenueDiff = ((drawerState.revenue - c.avg_metrics.avg_revenue) / c.avg_metrics.avg_revenue) * 100;
-                    const ordersDiff = ((drawerState.orders - c.avg_metrics.avg_orders) / c.avg_metrics.avg_orders) * 100;
+                    if (!c || !c.avg_metrics) return null;
+                    const revenueDiff = c.avg_metrics.avg_revenue > 0
+                      ? ((drawerState.revenue - c.avg_metrics.avg_revenue) / c.avg_metrics.avg_revenue) * 100
+                      : 0;
+                    const ordersDiff = c.avg_metrics.avg_orders > 0
+                      ? ((drawerState.orders - c.avg_metrics.avg_orders) / c.avg_metrics.avg_orders) * 100
+                      : 0;
                     return [
                       { label: 'Pendapatan', diff: revenueDiff },
                       { label: 'Pesanan', diff: ordersDiff },
