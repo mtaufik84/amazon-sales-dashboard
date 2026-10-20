@@ -1,22 +1,66 @@
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Printer, Package, Truck, CreditCard } from 'lucide-react';
-import { orders } from '../mocks/orders.js';
+import { ArrowLeft, Printer, Package, Truck, CreditCard, Building2 } from 'lucide-react';
+import { getSalesById } from '../services/api.js';
 import { formatINR, formatNumber, formatDate } from '../lib/format.js';
 import StatusBadge from '../components/StatusBadge.jsx';
 
+// Sumber data: GET /api/sales/:id (versi lama), ID dicocokkan sebagai String
+// karena backend menangani String(id). Ongkir/GST fiktif milik mock dihapus,
+// ringkasan keuangan hanya memakai jumlah riil dari API.
 export default function DetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const order = orders.find((o) => o.id === Number(id));
+  const [order, setOrder] = useState(null);
+  const [status, setStatus] = useState('loading'); // loading | ok | notfound | error
 
-  if (!order) {
+  useEffect(() => {
+    setStatus('loading');
+    getSalesById(id)
+      .then((data) => {
+        setOrder(data);
+        setStatus('ok');
+      })
+      .catch((err) => {
+        console.error('Gagal memuat detail pesanan:', err);
+        if (err?.response?.status === 404) setStatus('notfound');
+        else setStatus('error');
+      });
+  }, [id]);
+
+  const handleBack = () => navigate('/data'); // kembali /data seperti versi lama
+
+  if (status === 'loading') {
+    return (
+      <div className="p-6 max-w-[800px] mx-auto">
+        <div className="skeleton h-9 w-full rounded-md mb-4" />
+        <div className="border border-default rounded-lg">
+          <div className="skeleton h-20 w-full rounded-t-lg" />
+          <div className="p-8 space-y-4">
+            <div className="skeleton h-4 w-40 rounded" />
+            <div className="skeleton h-4 w-64 rounded" />
+            <div className="skeleton h-24 w-full rounded" />
+            <div className="skeleton h-16 w-full rounded" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (status !== 'ok' || !order) {
     return (
       <div className="p-6 max-w-[800px] mx-auto">
         <div className="text-center py-20">
-          <h1 className="text-lg font-medium text-primary-c">Pesanan tidak ditemukan</h1>
-          <p className="text-sm text-muted-c mt-1">Order ID #{id} tidak ada dalam data</p>
+          <h1 className="text-lg font-medium text-primary-c">
+            {status === 'notfound' ? 'Pesanan tidak ditemukan' : 'Gagal memuat pesanan'}
+          </h1>
+          <p className="text-sm text-muted-c mt-1">
+            {status === 'notfound'
+              ? `Order ID #${id} tidak ada dalam data`
+              : 'Terjadi kendala saat memuat data'}
+          </p>
           <button
-            onClick={() => navigate('/data')}
+            onClick={handleBack}
             className="mt-4 px-3 py-1.5 text-xs font-medium text-accent-600 dark:text-accent-400 border border-accent-200 dark:border-accent-800 rounded-md hover:bg-accent-50 dark:hover:bg-accent-950/30 transition-colors"
           >
             Kembali ke Daftar Pesanan
@@ -26,17 +70,14 @@ export default function DetailPage() {
     );
   }
 
-  const subtotal = order.amount;
-  const shipping = order.fulfilment === 'Amazon' ? 0 : 49;
-  const tax = Math.round(subtotal * 0.05);
-  const total = subtotal + shipping + tax;
+  const unitPrice = order.qty > 0 ? order.amount / order.qty : order.amount;
 
   return (
     <div className="p-6 max-w-[800px] mx-auto">
       {/* Top bar (no-print) */}
       <div className="flex items-center justify-between mb-6 no-print">
         <button
-          onClick={() => navigate('/data')}
+          onClick={handleBack}
           className="flex items-center gap-1.5 text-sm text-secondary-c hover:text-primary-c transition-colors focus-ring rounded-md"
         >
           <ArrowLeft className="w-4 h-4" strokeWidth={1.75} />
@@ -78,7 +119,9 @@ export default function DetailPage() {
           </div>
           <div>
             <div className="text-2xs text-muted-c uppercase tracking-wider mb-1.5">Tujuan</div>
-            <div className="text-sm text-primary-c">{order.city}, {order.state}</div>
+            <div className="text-sm text-primary-c">
+              {order.city}, {order.state}{order.postalCode ? ` (${order.postalCode})` : ''}
+            </div>
           </div>
         </div>
 
@@ -94,12 +137,12 @@ export default function DetailPage() {
               <div className="text-xs font-mono text-primary-c mt-0.5">{order.sku}</div>
             </div>
             <div>
-              <div className="text-2xs text-muted-c uppercase tracking-wider">Kategori</div>
-              <div className="text-xs text-primary-c mt-0.5">{order.category}</div>
+              <div className="text-2xs text-muted-c uppercase tracking-wider">Kategori · Style</div>
+              <div className="text-xs text-primary-c mt-0.5">{order.category}{order.style ? ` · ${order.style}` : ''}</div>
             </div>
             <div>
-              <div className="text-2xs text-muted-c uppercase tracking-wider">Ukuran</div>
-              <div className="text-xs text-primary-c mt-0.5">{order.size}</div>
+              <div className="text-2xs text-muted-c uppercase tracking-wider">Ukuran · ASIN</div>
+              <div className="text-xs font-mono text-primary-c mt-0.5">{order.size}{order.asin ? ` · ${order.asin}` : ''}</div>
             </div>
             <div>
               <div className="text-2xs text-muted-c uppercase tracking-wider">Kuantitas</div>
@@ -117,12 +160,31 @@ export default function DetailPage() {
           <div className="bg-subtle rounded-md p-4 grid grid-cols-2 gap-4">
             <div>
               <div className="text-2xs text-muted-c uppercase tracking-wider">Fulfilment</div>
-              <div className="text-xs text-primary-c mt-0.5">{order.fulfilment === 'Amazon' ? 'Amazon FBA' : 'Merchant Fulfilled'}</div>
+              <div className="text-xs text-primary-c mt-0.5">{order.fulfilment === 'Amazon' ? 'Amazon FBA' : 'Merchant (Easy Ship)'}</div>
             </div>
             <div>
-              <div className="text-2xs text-muted-c uppercase tracking-wider">Status</div>
-              <div className="text-xs text-primary-c mt-0.5">{order.status}</div>
+              <div className="text-2xs text-muted-c uppercase tracking-wider">Channel</div>
+              <div className="text-xs text-primary-c mt-0.5">{order.channel}</div>
             </div>
+            <div>
+              <div className="text-2xs text-muted-c uppercase tracking-wider">Service Level</div>
+              <div className="text-xs text-primary-c mt-0.5">{order.serviceLevel}</div>
+            </div>
+            <div>
+              <div className="text-2xs text-muted-c uppercase tracking-wider">Status Kurir</div>
+              <div className="text-xs text-primary-c mt-0.5">{order.courierStatus || '-'}</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Ringkasan pembeli */}
+        <div className="mb-6">
+          <div className="flex items-center gap-2 mb-3">
+            <Building2 className="w-4 h-4 text-muted-c" strokeWidth={1.75} />
+            <h3 className="text-sm font-medium text-primary-c">Tipe Pembeli</h3>
+          </div>
+          <div className="bg-subtle rounded-md p-4 text-xs text-primary-c">
+            {order.b2b ? 'B2B (Bisnis)' : 'Retail'}
           </div>
         </div>
 
@@ -134,20 +196,16 @@ export default function DetailPage() {
           </div>
           <div className="bg-subtle rounded-md p-4 space-y-2.5">
             <div className="flex items-center justify-between text-xs">
-              <span className="text-secondary-c">Subtotal ({formatNumber(order.qty)} × ₹{formatNumber(Math.round(order.amount / order.qty))})</span>
-              <span className="text-primary-c tabular-nums">{formatINR(subtotal)}</span>
+              <span className="text-secondary-c">Harga per Unit</span>
+              <span className="text-primary-c tabular-nums">{formatINR(Math.round(unitPrice))}</span>
             </div>
             <div className="flex items-center justify-between text-xs">
-              <span className="text-secondary-c">Ongkos Kirim</span>
-              <span className="text-primary-c tabular-nums">{shipping === 0 ? 'Gratis' : formatINR(shipping)}</span>
-            </div>
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-secondary-c">Pajak (GST 5%)</span>
-              <span className="text-primary-c tabular-nums">{formatINR(tax)}</span>
+              <span className="text-secondary-c">Kuantitas</span>
+              <span className="text-primary-c tabular-nums">{formatNumber(order.qty)}</span>
             </div>
             <div className="border-t border-default pt-2.5 flex items-center justify-between">
-              <span className="text-sm font-semibold text-primary-c">Total</span>
-              <span className="text-sm font-semibold text-primary-c tabular-nums">{formatINR(total)}</span>
+              <span className="text-sm font-semibold text-primary-c">Jumlah ({order.currency})</span>
+              <span className="text-sm font-semibold text-primary-c tabular-nums">{formatINR(order.amount)}</span>
             </div>
           </div>
         </div>
