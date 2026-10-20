@@ -1,0 +1,61 @@
+export const stats = {
+  totalRevenue: 78592314,
+  totalQty: 118542,
+  totalOrders: 42356,
+  avgOrderValue: 1857,
+  cancellationRate: 14.23,
+  b2bCount: 7891,
+  deltas: {
+    revenue: 12.4,
+    orders: 8.7,
+    units: 9.2,
+    cancellation: -2.1,
+    aov: 3.4,
+    b2b: 5.6,
+  },
+  sparklines: {
+    revenue: [42, 45, 41, 48, 52, 49, 55, 58, 54, 61, 65, 72, 68, 74, 78, 82],
+    orders: [210, 225, 218, 240, 255, 248, 270, 285, 275, 310, 325, 340, 332, 358, 370, 385],
+    units: [580, 610, 595, 650, 690, 670, 730, 760, 745, 820, 855, 880, 860, 920, 950, 985],
+    cancellation: [16.2, 15.8, 16.1, 15.4, 15.0, 14.8, 15.2, 14.6, 14.9, 14.3, 14.0, 14.5, 14.1, 13.8, 14.0, 14.2],
+  },
+};
+
+export const kpiCards = [
+  {
+    id: 'revenue',
+    label: 'Pendapatan Kotor',
+    value: stats.totalRevenue,
+    format: 'currency',
+    delta: stats.deltas.revenue,
+    sparkline: stats.sparklines.revenue,
+    positive: true,
+  },
+  {
+    id: 'orders',
+    label: 'Total Pesanan',
+    value: stats.totalOrders,
+    format: 'number',
+    delta: stats.deltas.orders,
+    sparkline: stats.sparklines.orders,
+    positive: true,
+  },
+  {
+    id: 'units',
+    label: 'Unit Dikirim',
+    value: stats.totalQty,
+    format: 'number',
+    delta: stats.deltas.units,
+    sparkline: stats.sparklines.units,
+    positive: true,
+  },
+  {
+    id: 'cancellation',
+    label: 'Tingkat Pembatalan',
+    value: stats.cancellationRate,
+    format: 'percent',
+    delta: stats.deltas.cancellation,
+    sparkline: stats.sparklines.cancellation,
+    positive: false,
+  },
+];
