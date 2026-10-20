@@ -28,3 +28,6 @@ __pycache__/
 .ipynb_checkpoints/
 *.pyo
 .python-version
+
+# Dokumen internal workflow
+uiRedesign.md
