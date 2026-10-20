@@ -18,7 +18,7 @@ const ALL_COLUMNS = [
   { key: 'amount', label: 'Jumlah', width: 'w-[100px]', align: 'right', sortable: true, format: (v) => formatINR(v) },
 ];
 
-export default function DataTable({ data, loading, onRowClick, pageSize = 15 }) {
+export default function DataTable({ data, loading, onRowClick, pageSize = 15, page: serverPage, totalPages: serverTotalPages, total: serverTotal, onPageChange }) {
   const [page, setPage] = useState(1);
   const [sortKey, setSortKey] = useState('date');
   const [sortDir, setSortDir] = useState('desc');
@@ -35,8 +35,15 @@ export default function DataTable({ data, loading, onRowClick, pageSize = 15 }) 
     });
   }, [data, sortKey, sortDir]);
 
-  const totalPages = Math.ceil(sorted.length / pageSize);
-  const pageData = sorted.slice((page - 1) * pageSize, page * pageSize);
+  // Mode server: paginasi & hitung total dari /table (perilaku DataPage lama);
+  // sortir tetap dalam halaman hasil yang diterima dari API.
+  const isServer = typeof onPageChange === 'function';
+  const totalPages = isServer ? (serverTotalPages || 1) : Math.ceil(sorted.length / pageSize);
+  const pageData = isServer ? sorted : sorted.slice((page - 1) * pageSize, page * pageSize);
+  const totalCount = isServer ? (serverTotal || 0) : sorted.length;
+  const currentPage = isServer ? (serverPage || 1) : page;
+
+  const gotoPage = (p) => (isServer ? onPageChange(p) : setPage(p));
   const columns = ALL_COLUMNS.filter((c) => visibleCols.includes(c.key));
 
   const handleSort = (key) => {
@@ -67,9 +74,9 @@ export default function DataTable({ data, loading, onRowClick, pageSize = 15 }) 
       {/* Toolbar */}
       <div className="flex items-center justify-between px-4 py-2.5 border-b border-subtle">
         <div className="text-xs text-muted-c">
-          Menampilkan <span className="text-primary-c font-medium tabular-nums">{(page - 1) * pageSize + 1}</span>–
-          <span className="text-primary-c font-medium tabular-nums">{Math.min(page * pageSize, sorted.length)}</span> dari{' '}
-          <span className="text-primary-c font-medium tabular-nums">{formatNumber(sorted.length)}</span> pesanan
+          Menampilkan <span className="text-primary-c font-medium tabular-nums">{(currentPage - 1) * pageSize + 1}</span>–
+          <span className="text-primary-c font-medium tabular-nums">{Math.min(currentPage * pageSize, totalCount)}</span> dari{' '}
+          <span className="text-primary-c font-medium tabular-nums">{formatNumber(totalCount)}</span> pesanan
         </div>
         <div className="flex items-center gap-2 relative">
           <button
@@ -155,20 +162,20 @@ export default function DataTable({ data, loading, onRowClick, pageSize = 15 }) 
       {/* Pagination */}
       <div className="flex items-center justify-between px-4 py-2.5 border-t border-subtle">
         <div className="text-2xs text-muted-c">
-          Halaman <span className="text-primary-c font-medium tabular-nums">{page}</span> dari{' '}
+          Halaman <span className="text-primary-c font-medium tabular-nums">{currentPage}</span> dari{' '}
           <span className="text-primary-c font-medium tabular-nums">{totalPages}</span>
         </div>
         <div className="flex items-center gap-1">
           <button
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-            disabled={page === 1}
+            onClick={() => gotoPage(Math.max(1, currentPage - 1))}
+            disabled={currentPage === 1}
             className="p-1.5 rounded-md text-muted-c hover:text-primary-c hover:bg-subtle disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-ring"
           >
             <ChevronLeft className="w-4 h-4" strokeWidth={1.75} />
           </button>
           <button
-            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-            disabled={page === totalPages}
+            onClick={() => gotoPage(Math.min(totalPages, currentPage + 1))}
+            disabled={currentPage === totalPages}
             className="p-1.5 rounded-md text-muted-c hover:text-primary-c hover:bg-subtle disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-ring"
           >
             <ChevronRight className="w-4 h-4" strokeWidth={1.75} />
