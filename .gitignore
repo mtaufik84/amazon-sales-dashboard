@@ -21,3 +21,10 @@ dist-ssr
 *.sln
 *.sw?
 .env
+
+# Python / ML pipeline artifacts
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+*.pyo
+.python-version
