@@ -1,0 +1,35 @@
+{
+  "pipeline_version": "1.0.0",
+  "generated_at": "2026-10-19T21:48:02.152616",
+  "environment": "Offline Python Training -> Production Node.js JSON Artifacts",
+  "dataset": {
+    "name": "Amazon India E-Commerce Sales Report",
+    "total_rows": 42356,
+    "date_range": "2022-04-05 s.d. 2022-04-30",
+    "active_days": 26,
+    "currency": "INR"
+  },
+  "models": {
+    "region_segmentation": {
+      "algorithm": "K-Means Clustering",
+      "k": 4,
+      "status": "Tersedia (Ready)",
+      "artifact": "region_clusters.json"
+    },
+    "cancel_risk": {
+      "algorithm": "Logistic Regression & Random Forest",
+      "status": "Tersedia (Ready)",
+      "artifact": "cancel_risk_model.json & cancel_risk_summary.json"
+    },
+    "stock_forecast": {
+      "algorithm": "Velocity ADS & Recent Trend Multiplier",
+      "status": "Tersedia (Ready)",
+      "artifact": "stock_recommendations.json"
+    },
+    "actionable_recommendations": {
+      "total_cards": 5,
+      "status": "Tersedia (Ready)",
+      "artifact": "recommendations.json"
+    }
+  }
+}

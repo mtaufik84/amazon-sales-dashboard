@@ -1,0 +1,625 @@
+{
+  "metadata": {
+    "k": 4,
+    "silhouette_score": 0.3696,
+    "features_used": [
+      "log_revenue",
+      "cancellation_rate",
+      "avg_unit_price"
+    ],
+    "random_state": 42,
+    "total_states_clustered": 36
+  },
+  "clusters": {
+    "0": {
+      "label": "Pasar Berkembang Rendah Risiko",
+      "description": "Wilayah dengan stabilitas tinggi, tingkat pembatalan terendah (11.9%), dan harga satuan rata-rata premium.",
+      "action": "Tingkatkan anggaran kampanye pemasaran lokal dan sediakan katalog etnik premium.",
+      "color": "#0D9488",
+      "state_count": 7,
+      "states": [
+        "Chandigarh",
+        "Chhattisgarh",
+        "Himachal Pradesh",
+        "Manipur",
+        "Meghalaya",
+        "Sikkim",
+        "Tripura"
+      ],
+      "avg_metrics": {
+        "avg_orders": 140.6,
+        "avg_revenue": 87519.46,
+        "cancellation_rate": 0.1187,
+        "avg_unit_price": 674.82,
+        "fba_ratio": 0.6079,
+        "expedited_ratio": 0.6028
+      }
+    },
+    "1": {
+      "label": "Pasar Inti Volume Tinggi",
+      "description": "Basis konsumen utama dengan kontribusi >90% omzet nasional, loyalitas tinggi, dan infrastruktur FBA matang.",
+      "action": "Jaga kesinambungan stok best-seller (Kurta & Set) dan prioritaskan pergudangan FBA.",
+      "color": "#2457FF",
+      "state_count": 20,
+      "states": [
+        "Andhra Pradesh",
+        "Assam",
+        "Bihar",
+        "Delhi",
+        "Goa",
+        "Gujarat",
+        "Haryana",
+        "Jharkhand",
+        "Karnataka",
+        "Kerala",
+        "Madhya Pradesh",
+        "Maharashtra",
+        "Odisha",
+        "Punjab",
+        "Rajasthan",
+        "Tamil Nadu",
+        "Telangana",
+        "Uttar Pradesh",
+        "Uttarakhand",
+        "West Bengal"
+      ],
+      "avg_metrics": {
+        "avg_orders": 2038.5,
+        "avg_revenue": 1194098.79,
+        "cancellation_rate": 0.1504,
+        "avg_unit_price": 647.9,
+        "fba_ratio": 0.6544,
+        "expedited_ratio": 0.6457
+      }
+    },
+    "2": {
+      "label": "Pasar Ceruk Terpencil",
+      "description": "Wilayah kepulauan/pegunungan terpencil dengan transaksi mikro namun nilai belanja rata-rata tertinggi (>INR 850).",
+      "action": "Gunakan pengemasan kokoh tahan cuaca ekstrem dan pertahankan jadwal pengiriman reguler.",
+      "color": "#F59E0B",
+      "state_count": 2,
+      "states": [
+        "Ladakh",
+        "Lakshadweep"
+      ],
+      "avg_metrics": {
+        "avg_orders": 7.5,
+        "avg_revenue": 6214.0,
+        "cancellation_rate": 0.0357,
+        "avg_unit_price": 869.25,
+        "fba_ratio": 0.3571,
+        "expedited_ratio": 0.3214
+      }
+    },
+    "3": {
+      "label": "Pasar Risiko Pembatalan Tinggi",
+      "description": "Wilayah dengan tingkat pembatalan tertinggi (>21%) akibat kendala jarak logistik dan durasi transit rute jauh.",
+      "action": "Alihkan ke mitra ekspedisi kargo udara kilat dan verifikasi kontak sebelum pengiriman.",
+      "color": "#EF4444",
+      "state_count": 7,
+      "states": [
+        "Andaman and Nicobar Islands",
+        "Arunachal Pradesh",
+        "Dadra and Nagar Haveli",
+        "Jammu and Kashmir",
+        "Mizoram",
+        "Nagaland",
+        "Puducherry"
+      ],
+      "avg_metrics": {
+        "avg_orders": 82.0,
+        "avg_revenue": 48669.27,
+        "cancellation_rate": 0.2165,
+        "avg_unit_price": 647.52,
+        "fba_ratio": 0.6497,
+        "expedited_ratio": 0.645
+      }
+    }
+  },
+  "state_lookup": {
+    "Andaman and Nicobar Islands": {
+      "cluster_id": 3,
+      "cluster_label": "Pasar Risiko Pembatalan Tinggi",
+      "color": "#EF4444",
+      "metrics": {
+        "total_orders": 79,
+        "total_revenue": 46794.78,
+        "cancellation_rate": 0.2405,
+        "avg_unit_price": 657.77,
+        "fba_ratio": 0.6582,
+        "expedited_ratio": 0.6582,
+        "promotion_ratio": 0.6456
+      }
+    },
+    "Andhra Pradesh": {
+      "cluster_id": 1,
+      "cluster_label": "Pasar Inti Volume Tinggi",
+      "color": "#2457FF",
+      "metrics": {
+        "total_orders": 1679,
+        "total_revenue": 954802.94,
+        "cancellation_rate": 0.1638,
+        "avg_unit_price": 612.56,
+        "fba_ratio": 0.6784,
+        "expedited_ratio": 0.6718,
+        "promotion_ratio": 0.67
+      }
+    },
+    "Arunachal Pradesh": {
+      "cluster_id": 3,
+      "cluster_label": "Pasar Risiko Pembatalan Tinggi",
+      "color": "#EF4444",
+      "metrics": {
+        "total_orders": 43,
+        "total_revenue": 26543.38,
+        "cancellation_rate": 0.2558,
+        "avg_unit_price": 682.37,
+        "fba_ratio": 0.6047,
+        "expedited_ratio": 0.6047,
+        "promotion_ratio": 0.6977
+      }
+    },
+    "Assam": {
+      "cluster_id": 1,
+      "cluster_label": "Pasar Inti Volume Tinggi",
+      "color": "#2457FF",
+      "metrics": {
+        "total_orders": 641,
+        "total_revenue": 368137.69,
+        "cancellation_rate": 0.1669,
+        "avg_unit_price": 639.33,
+        "fba_ratio": 0.6693,
+        "expedited_ratio": 0.6599,
+        "promotion_ratio": 0.7051
+      }
+    },
+    "Bihar": {
+      "cluster_id": 1,
+      "cluster_label": "Pasar Inti Volume Tinggi",
+      "color": "#2457FF",
+      "metrics": {
+        "total_orders": 756,
+        "total_revenue": 492083.3,
+        "cancellation_rate": 0.1786,
+        "avg_unit_price": 709.2,
+        "fba_ratio": 0.6693,
+        "expedited_ratio": 0.664,
+        "promotion_ratio": 0.7143
+      }
+    },
+    "Chandigarh": {
+      "cluster_id": 0,
+      "cluster_label": "Pasar Berkembang Rendah Risiko",
+      "color": "#0D9488",
+      "metrics": {
+        "total_orders": 102,
+        "total_revenue": 67719.33,
+        "cancellation_rate": 0.0686,
+        "avg_unit_price": 703.75,
+        "fba_ratio": 0.6471,
+        "expedited_ratio": 0.6373,
+        "promotion_ratio": 0.7647
+      }
+    },
+    "Chhattisgarh": {
+      "cluster_id": 0,
+      "cluster_label": "Pasar Berkembang Rendah Risiko",
+      "color": "#0D9488",
+      "metrics": {
+        "total_orders": 316,
+        "total_revenue": 194166.56,
+        "cancellation_rate": 0.1266,
+        "avg_unit_price": 651.4,
+        "fba_ratio": 0.6171,
+        "expedited_ratio": 0.6139,
+        "promotion_ratio": 0.7722
+      }
+    },
+    "Dadra and Nagar Haveli": {
+      "cluster_id": 3,
+      "cluster_label": "Pasar Risiko Pembatalan Tinggi",
+      "color": "#EF4444",
+      "metrics": {
+        "total_orders": 25,
+        "total_revenue": 14422.9,
+        "cancellation_rate": 0.2,
+        "avg_unit_price": 670.12,
+        "fba_ratio": 0.6,
+        "expedited_ratio": 0.6,
+        "promotion_ratio": 0.64
+      }
+    },
+    "Delhi": {
+      "cluster_id": 1,
+      "cluster_label": "Pasar Inti Volume Tinggi",
+      "color": "#2457FF",
+      "metrics": {
+        "total_orders": 2347,
+        "total_revenue": 1434950.06,
+        "cancellation_rate": 0.1304,
+        "avg_unit_price": 661.5,
+        "fba_ratio": 0.6489,
+        "expedited_ratio": 0.6391,
+        "promotion_ratio": 0.6587
+      }
+    },
+    "Goa": {
+      "cluster_id": 1,
+      "cluster_label": "Pasar Inti Volume Tinggi",
+      "color": "#2457FF",
+      "metrics": {
+        "total_orders": 408,
+        "total_revenue": 233106.05,
+        "cancellation_rate": 0.1275,
+        "avg_unit_price": 608.02,
+        "fba_ratio": 0.6716,
+        "expedited_ratio": 0.6691,
+        "promotion_ratio": 0.7132
+      }
+    },
+    "Gujarat": {
+      "cluster_id": 1,
+      "cluster_label": "Pasar Inti Volume Tinggi",
+      "color": "#2457FF",
+      "metrics": {
+        "total_orders": 1502,
+        "total_revenue": 862759.82,
+        "cancellation_rate": 0.1365,
+        "avg_unit_price": 643.13,
+        "fba_ratio": 0.6498,
+        "expedited_ratio": 0.6079,
+        "promotion_ratio": 0.6032
+      }
+    },
+    "Haryana": {
+      "cluster_id": 1,
+      "cluster_label": "Pasar Inti Volume Tinggi",
+      "color": "#2457FF",
+      "metrics": {
+        "total_orders": 1449,
+        "total_revenue": 908412.42,
+        "cancellation_rate": 0.1456,
+        "avg_unit_price": 678.38,
+        "fba_ratio": 0.6653,
+        "expedited_ratio": 0.6549,
+        "promotion_ratio": 0.6577
+      }
+    },
+    "Himachal Pradesh": {
+      "cluster_id": 0,
+      "cluster_label": "Pasar Berkembang Rendah Risiko",
+      "color": "#0D9488",
+      "metrics": {
+        "total_orders": 263,
+        "total_revenue": 161012.49,
+        "cancellation_rate": 0.1407,
+        "avg_unit_price": 697.3,
+        "fba_ratio": 0.5703,
+        "expedited_ratio": 0.5475,
+        "promotion_ratio": 0.7681
+      }
+    },
+    "Jammu and Kashmir": {
+      "cluster_id": 3,
+      "cluster_label": "Pasar Risiko Pembatalan Tinggi",
+      "color": "#EF4444",
+      "metrics": {
+        "total_orders": 250,
+        "total_revenue": 160248.51,
+        "cancellation_rate": 0.204,
+        "avg_unit_price": 705.57,
+        "fba_ratio": 0.652,
+        "expedited_ratio": 0.636,
+        "promotion_ratio": 0.704
+      }
+    },
+    "Jharkhand": {
+      "cluster_id": 1,
+      "cluster_label": "Pasar Inti Volume Tinggi",
+      "color": "#2457FF",
+      "metrics": {
+        "total_orders": 555,
+        "total_revenue": 348172.0,
+        "cancellation_rate": 0.1748,
+        "avg_unit_price": 694.83,
+        "fba_ratio": 0.6108,
+        "expedited_ratio": 0.6018,
+        "promotion_ratio": 0.7171
+      }
+    },
+    "Karnataka": {
+      "cluster_id": 1,
+      "cluster_label": "Pasar Inti Volume Tinggi",
+      "color": "#2457FF",
+      "metrics": {
+        "total_orders": 5554,
+        "total_revenue": 3215157.63,
+        "cancellation_rate": 0.1325,
+        "avg_unit_price": 620.51,
+        "fba_ratio": 0.7004,
+        "expedited_ratio": 0.6927,
+        "promotion_ratio": 0.5823
+      }
+    },
+    "Kerala": {
+      "cluster_id": 1,
+      "cluster_label": "Pasar Inti Volume Tinggi",
+      "color": "#2457FF",
+      "metrics": {
+        "total_orders": 2119,
+        "total_revenue": 1186374.59,
+        "cancellation_rate": 0.184,
+        "avg_unit_price": 605.05,
+        "fba_ratio": 0.6385,
+        "expedited_ratio": 0.6324,
+        "promotion_ratio": 0.6678
+      }
+    },
+    "Ladakh": {
+      "cluster_id": 2,
+      "cluster_label": "Pasar Ceruk Terpencil",
+      "color": "#F59E0B",
+      "metrics": {
+        "total_orders": 14,
+        "total_revenue": 11603.0,
+        "cancellation_rate": 0.0714,
+        "avg_unit_price": 913.5,
+        "fba_ratio": 0.7143,
+        "expedited_ratio": 0.6429,
+        "promotion_ratio": 0.8571
+      }
+    },
+    "Lakshadweep": {
+      "cluster_id": 2,
+      "cluster_label": "Pasar Ceruk Terpencil",
+      "color": "#F59E0B",
+      "metrics": {
+        "total_orders": 1,
+        "total_revenue": 825.0,
+        "cancellation_rate": 0.0,
+        "avg_unit_price": 825.0,
+        "fba_ratio": 0.0,
+        "expedited_ratio": 0.0,
+        "promotion_ratio": 1.0
+      }
+    },
+    "Madhya Pradesh": {
+      "cluster_id": 1,
+      "cluster_label": "Pasar Inti Volume Tinggi",
+      "color": "#2457FF",
+      "metrics": {
+        "total_orders": 795,
+        "total_revenue": 483780.77,
+        "cancellation_rate": 0.1535,
+        "avg_unit_price": 656.87,
+        "fba_ratio": 0.6101,
+        "expedited_ratio": 0.605,
+        "promotion_ratio": 0.7585
+      }
+    },
+    "Maharashtra": {
+      "cluster_id": 1,
+      "cluster_label": "Pasar Inti Volume Tinggi",
+      "color": "#2457FF",
+      "metrics": {
+        "total_orders": 7355,
+        "total_revenue": 4262822.45,
+        "cancellation_rate": 0.1288,
+        "avg_unit_price": 622.72,
+        "fba_ratio": 0.6753,
+        "expedited_ratio": 0.6702,
+        "promotion_ratio": 0.532
+      }
+    },
+    "Manipur": {
+      "cluster_id": 0,
+      "cluster_label": "Pasar Berkembang Rendah Risiko",
+      "color": "#0D9488",
+      "metrics": {
+        "total_orders": 115,
+        "total_revenue": 79112.66,
+        "cancellation_rate": 0.1391,
+        "avg_unit_price": 735.86,
+        "fba_ratio": 0.6435,
+        "expedited_ratio": 0.6435,
+        "promotion_ratio": 0.7913
+      }
+    },
+    "Meghalaya": {
+      "cluster_id": 0,
+      "cluster_label": "Pasar Berkembang Rendah Risiko",
+      "color": "#0D9488",
+      "metrics": {
+        "total_orders": 72,
+        "total_revenue": 39367.62,
+        "cancellation_rate": 0.0972,
+        "avg_unit_price": 582.07,
+        "fba_ratio": 0.5694,
+        "expedited_ratio": 0.5694,
+        "promotion_ratio": 0.8333
+      }
+    },
+    "Mizoram": {
+      "cluster_id": 3,
+      "cluster_label": "Pasar Risiko Pembatalan Tinggi",
+      "color": "#EF4444",
+      "metrics": {
+        "total_orders": 22,
+        "total_revenue": 10973.0,
+        "cancellation_rate": 0.2273,
+        "avg_unit_price": 557.05,
+        "fba_ratio": 0.6818,
+        "expedited_ratio": 0.6818,
+        "promotion_ratio": 0.7273
+      }
+    },
+    "Nagaland": {
+      "cluster_id": 3,
+      "cluster_label": "Pasar Risiko Pembatalan Tinggi",
+      "color": "#EF4444",
+      "metrics": {
+        "total_orders": 41,
+        "total_revenue": 26640.15,
+        "cancellation_rate": 0.1951,
+        "avg_unit_price": 703.05,
+        "fba_ratio": 0.6585,
+        "expedited_ratio": 0.6585,
+        "promotion_ratio": 0.7805
+      }
+    },
+    "Odisha": {
+      "cluster_id": 1,
+      "cluster_label": "Pasar Inti Volume Tinggi",
+      "color": "#2457FF",
+      "metrics": {
+        "total_orders": 729,
+        "total_revenue": 448926.13,
+        "cancellation_rate": 0.1687,
+        "avg_unit_price": 671.68,
+        "fba_ratio": 0.6598,
+        "expedited_ratio": 0.6529,
+        "promotion_ratio": 0.7339
+      }
+    },
+    "Puducherry": {
+      "cluster_id": 3,
+      "cluster_label": "Pasar Risiko Pembatalan Tinggi",
+      "color": "#EF4444",
+      "metrics": {
+        "total_orders": 114,
+        "total_revenue": 55062.18,
+        "cancellation_rate": 0.193,
+        "avg_unit_price": 556.74,
+        "fba_ratio": 0.693,
+        "expedited_ratio": 0.6754,
+        "promotion_ratio": 0.5614
+      }
+    },
+    "Punjab": {
+      "cluster_id": 1,
+      "cluster_label": "Pasar Inti Volume Tinggi",
+      "color": "#2457FF",
+      "metrics": {
+        "total_orders": 658,
+        "total_revenue": 415339.15,
+        "cancellation_rate": 0.1322,
+        "avg_unit_price": 665.66,
+        "fba_ratio": 0.6201,
+        "expedited_ratio": 0.614,
+        "promotion_ratio": 0.7629
+      }
+    },
+    "Rajasthan": {
+      "cluster_id": 1,
+      "cluster_label": "Pasar Inti Volume Tinggi",
+      "color": "#2457FF",
+      "metrics": {
+        "total_orders": 940,
+        "total_revenue": 575457.1,
+        "cancellation_rate": 0.1479,
+        "avg_unit_price": 673.31,
+        "fba_ratio": 0.6138,
+        "expedited_ratio": 0.6074,
+        "promotion_ratio": 0.7415
+      }
+    },
+    "Sikkim": {
+      "cluster_id": 0,
+      "cluster_label": "Pasar Berkembang Rendah Risiko",
+      "color": "#0D9488",
+      "metrics": {
+        "total_orders": 59,
+        "total_revenue": 39704.58,
+        "cancellation_rate": 0.1356,
+        "avg_unit_price": 716.69,
+        "fba_ratio": 0.5763,
+        "expedited_ratio": 0.5763,
+        "promotion_ratio": 0.8136
+      }
+    },
+    "Tamil Nadu": {
+      "cluster_id": 1,
+      "cluster_label": "Pasar Inti Volume Tinggi",
+      "color": "#2457FF",
+      "metrics": {
+        "total_orders": 3418,
+        "total_revenue": 1811240.5,
+        "cancellation_rate": 0.1404,
+        "avg_unit_price": 570.28,
+        "fba_ratio": 0.701,
+        "expedited_ratio": 0.6957,
+        "promotion_ratio": 0.5977
+      }
+    },
+    "Telangana": {
+      "cluster_id": 1,
+      "cluster_label": "Pasar Inti Volume Tinggi",
+      "color": "#2457FF",
+      "metrics": {
+        "total_orders": 3484,
+        "total_revenue": 2020996.22,
+        "cancellation_rate": 0.1533,
+        "avg_unit_price": 628.02,
+        "fba_ratio": 0.6702,
+        "expedited_ratio": 0.6668,
+        "promotion_ratio": 0.591
+      }
+    },
+    "Tripura": {
+      "cluster_id": 0,
+      "cluster_label": "Pasar Berkembang Rendah Risiko",
+      "color": "#0D9488",
+      "metrics": {
+        "total_orders": 57,
+        "total_revenue": 31553.0,
+        "cancellation_rate": 0.1228,
+        "avg_unit_price": 636.65,
+        "fba_ratio": 0.6316,
+        "expedited_ratio": 0.6316,
+        "promotion_ratio": 0.7193
+      }
+    },
+    "Uttar Pradesh": {
+      "cluster_id": 1,
+      "cluster_label": "Pasar Inti Volume Tinggi",
+      "color": "#2457FF",
+      "metrics": {
+        "total_orders": 3600,
+        "total_revenue": 2244064.27,
+        "cancellation_rate": 0.1481,
+        "avg_unit_price": 681.33,
+        "fba_ratio": 0.6281,
+        "expedited_ratio": 0.6172,
+        "promotion_ratio": 0.6947
+      }
+    },
+    "Uttarakhand": {
+      "cluster_id": 1,
+      "cluster_label": "Pasar Inti Volume Tinggi",
+      "color": "#2457FF",
+      "metrics": {
+        "total_orders": 563,
+        "total_revenue": 356138.16,
+        "cancellation_rate": 0.1492,
+        "avg_unit_price": 690.78,
+        "fba_ratio": 0.6359,
+        "expedited_ratio": 0.6306,
+        "promotion_ratio": 0.7265
+      }
+    },
+    "West Bengal": {
+      "cluster_id": 1,
+      "cluster_label": "Pasar Inti Volume Tinggi",
+      "color": "#2457FF",
+      "metrics": {
+        "total_orders": 2218,
+        "total_revenue": 1259254.59,
+        "cancellation_rate": 0.1447,
+        "avg_unit_price": 624.78,
+        "fba_ratio": 0.6722,
+        "expedited_ratio": 0.6601,
+        "promotion_ratio": 0.6298
+      }
+    }
+  }
+}

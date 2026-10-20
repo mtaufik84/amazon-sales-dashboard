@@ -1,0 +1,87 @@
+[
+  {
+    "id": "rec-stock-001",
+    "category": "Inventaris & Stok",
+    "priority": "Tinggi",
+    "title": "Restock Segera 21 SKU Kritis untuk Menghindari Kehabisan Stok",
+    "description": "Terdapat 21 SKU berpenjualan tinggi (terutama kategori Set dan Kurta ukuran L/XL/XXL) dengan sisa stok di bawah Reorder Point (ROP). Proyeksi menunjukkan risiko kehabisan stok dalam 7 hari jika tidak segera dipesan.",
+    "impact": "Potensi pendapatan terlindungi: ~INR 656,794 dalam 14 hari ke depan.",
+    "action_items": [
+      "Pesan 50 unit SKU SET268-KR-NP-XL (estimasi biaya: INR 25,556.58).",
+      "Pesan 47 unit SKU SET268-KR-NP-L (estimasi biaya: INR 23,996.31).",
+      "Fokuskan alokasi modal restock pada kategori Set dan Kurta yang mencakup >80% total omzet."
+    ],
+    "badge": "Mendesak",
+    "badge_color": "#EF4444",
+    "target_type": "sku",
+    "metric_highlight": "21 SKU Urgent"
+  },
+  {
+    "id": "rec-geo-002",
+    "category": "Wilayah & Ekspansi",
+    "priority": "Sedang",
+    "title": "Tingkatkan Alokasi Kampanye Pemasaran di 7 Wilayah Pasar Berkembang",
+    "description": "Klaster 0 (Chandigarh, Chhattisgarh, Himachal Pradesh, Manipur, Meghalaya, Sikkim, Tripura) mencatatkan rasio pembatalan terendah nasional (11.87%) dengan harga per unit premium (INR 674.80). Basis konsumen di wilayah ini menunjukkan kepuasan dan loyalitas tinggi.",
+    "impact": "Potensi pertumbuhan omzet regional hingga 25% dengan risiko retur/batal minimal.",
+    "action_items": [
+      "Tingkatkan anggaran kampanye iklan bertarget untuk busana etnik premium di Chandigarh dan Himachal Pradesh.",
+      "Sediakan varian busana pesta dan set bordir premium berharga >INR 700.",
+      "Tawarkan promosi gratis ongkir bersyarat untuk nilai transaksi di atas INR 999."
+    ],
+    "badge": "Peluang Pertumbuhan",
+    "badge_color": "#0D9488",
+    "target_type": "region",
+    "metric_highlight": "11.87% Cancel Rate"
+  },
+  {
+    "id": "rec-cancel-003",
+    "category": "Mitigasi Pembatalan",
+    "priority": "Tinggi",
+    "title": "Terapkan Validasi Alamat & Ekspedisi Udara untuk 7 Wilayah Berisiko Tinggi",
+    "description": "Klaster 3 (Andaman & Nicobar Islands, Arunachal Pradesh, Dadra & Nagar Haveli, Jammu & Kashmir, Mizoram, Nagaland, Puducherry) mencatatkan rasio pembatalan tertinggi (21.65%) akibat kendala jarak logistik dan durasi transit rute jauh.",
+    "impact": "Potensi penurunan pembatalan hingga 30%, menyelamatkan ~INR 15.000 omzet mingguan.",
+    "action_items": [
+      "Kirimkan pesan konfirmasi alamat instan via WhatsApp/SMS segera setelah checkout.",
+      "Alihkan kurir ke rute kepulauan dan pegunungan menggunakan layanan kargo udara prioritas.",
+      "Tampilkan estimasi durasi pengiriman yang transparan di antarmuka pemesanan."
+    ],
+    "badge": "Mitigasi Risiko",
+    "badge_color": "#EF4444",
+    "target_type": "logistics",
+    "metric_highlight": "21.65% Cancel Rate"
+  },
+  {
+    "id": "rec-fba-004",
+    "category": "Optimalisasi Fulfilment",
+    "priority": "Tinggi",
+    "title": "Migrasikan Produk Merchant ke Amazon FBA untuk Menekan Pembatalan",
+    "description": "Hasil model menunjukkan pesanan non-FBA (Merchant Fulfilled) memiliki probabilitas pembatalan 2.4x lebih tinggi dibandingkan pesanan FBA Amazon. Kecepatan dispatch dan jaminan pengiriman Amazon Prime terbukti memangkas pembatalan impulsif.",
+    "impact": "Peningkatan rasio pesanan sukses dari 79% menjadi 92% untuk produk yang dialihkan ke FBA.",
+    "action_items": [
+      "Daftarkan 15 SKU merchant terlaris ke gudang FBA terdekat (terutama di hub Maharashtra dan Karnataka).",
+      "Gunakan program Amazon Easy Ship berprioritas untuk penjual yang belum memiliki alokasi gudang FBA.",
+      "Tampilkan badge pengiriman cepat pada katalog produk merchant."
+    ],
+    "badge": "Efisiensi Logistik",
+    "badge_color": "#2457FF",
+    "target_type": "fulfilment",
+    "metric_highlight": "FBA vs Merchant"
+  },
+  {
+    "id": "rec-promo-005",
+    "category": "Promosi & Bundling",
+    "priority": "Sedang",
+    "title": "Paket Bundling & Voucher Promo untuk Kategori Western Dress & Top",
+    "description": "Kategori Western Dress dan Top memiliki rasio pembatalan sehat (13-14%) namun frekuensi belanja terkonsentrasi di akhir pekan. Pemanfaatan voucher promosi terbukti efektif mengunci komitmen pembelian dan mendongkrak nilai keranjang belanja.",
+    "impact": "Kenaikan unit per transaksi (UPT) dari 1.0 ke 1.3 dan potensi peningkatan omzet kategori sebesar 18%.",
+    "action_items": [
+      "Buat paket bundling Mix & Match (Beli 1 Western Dress + 1 Top diskon 15%).",
+      "Luncurkan voucher diskon akhir pekan untuk mendorong checkout pada hari Jumat dan Sabtu.",
+      "Integrasikan rekomendasi silang (cross-selling) pada ringkasan pesanan."
+    ],
+    "badge": "Aktivasi Penjualan",
+    "badge_color": "#F59E0B",
+    "target_type": "marketing",
+    "metric_highlight": "+18% Potensi Omzet"
+  }
+]

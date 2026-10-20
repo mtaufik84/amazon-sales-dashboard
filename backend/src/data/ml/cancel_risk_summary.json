@@ -1,0 +1,442 @@
+{
+  "model_metrics": {
+    "model_name": "Logistic Regression (Class-Balanced) & Random Forest",
+    "roc_auc": 0.9315,
+    "rf_roc_auc": 0.9411,
+    "pr_auc": 0.7697,
+    "accuracy": 0.7855,
+    "f1_class_1": 0.5695,
+    "recall_class_1": 0.9796,
+    "confusion_matrix": [
+      [
+        5453,
+        1792
+      ],
+      [
+        25,
+        1202
+      ]
+    ],
+    "train_samples": 33884,
+    "test_samples": 8472
+  },
+  "risk_thresholds": {
+    "low": 0.2,
+    "medium": 0.4,
+    "high": 0.4
+  },
+  "top_feature_importances": [
+    {
+      "feature": "has_promotion_1",
+      "importance": 0.5061,
+      "logistic_weight": -3.363,
+      "direction": "Menurunkan Risiko"
+    },
+    {
+      "feature": "has_promotion_0",
+      "importance": 0.3815,
+      "logistic_weight": 3.1123,
+      "direction": "Menaikkan Risiko"
+    },
+    {
+      "feature": "is_fba_1",
+      "importance": 0.0154,
+      "logistic_weight": -2.1859,
+      "direction": "Menurunkan Risiko"
+    },
+    {
+      "feature": "unit_price",
+      "importance": 0.0143,
+      "logistic_weight": 0.0055,
+      "direction": "Menaikkan Risiko"
+    },
+    {
+      "feature": "is_fba_0",
+      "importance": 0.0118,
+      "logistic_weight": 1.9352,
+      "direction": "Menaikkan Risiko"
+    },
+    {
+      "feature": "is_expedited_0",
+      "importance": 0.0104,
+      "logistic_weight": -1.0213,
+      "direction": "Menurunkan Risiko"
+    },
+    {
+      "feature": "is_expedited_1",
+      "importance": 0.008,
+      "logistic_weight": 0.7705,
+      "direction": "Menaikkan Risiko"
+    },
+    {
+      "feature": "day_of_month",
+      "importance": 0.0076,
+      "logistic_weight": 0.041,
+      "direction": "Menaikkan Risiko"
+    },
+    {
+      "feature": "ship_state_clean_Maharashtra",
+      "importance": 0.006,
+      "logistic_weight": -0.9785,
+      "direction": "Menurunkan Risiko"
+    },
+    {
+      "feature": "day_of_week",
+      "importance": 0.0045,
+      "logistic_weight": 0.0176,
+      "direction": "Menaikkan Risiko"
+    }
+  ],
+  "risk_by_category": {
+    "Blouse": {
+      "total_orders": 370,
+      "cancelled_orders": 52,
+      "cancel_rate": 0.1405,
+      "risk_level": "Rendah"
+    },
+    "Bottom": {
+      "total_orders": 167,
+      "cancelled_orders": 16,
+      "cancel_rate": 0.0958,
+      "risk_level": "Rendah"
+    },
+    "Ethnic Dress": {
+      "total_orders": 309,
+      "cancelled_orders": 43,
+      "cancel_rate": 0.1392,
+      "risk_level": "Rendah"
+    },
+    "Kurta": {
+      "total_orders": 17161,
+      "cancelled_orders": 2619,
+      "cancel_rate": 0.1526,
+      "risk_level": "Sedang"
+    },
+    "Saree": {
+      "total_orders": 67,
+      "cancelled_orders": 9,
+      "cancel_rate": 0.1343,
+      "risk_level": "Rendah"
+    },
+    "Set": {
+      "total_orders": 17253,
+      "cancelled_orders": 2526,
+      "cancel_rate": 0.1464,
+      "risk_level": "Rendah"
+    },
+    "Top": {
+      "total_orders": 3291,
+      "cancelled_orders": 379,
+      "cancel_rate": 0.1152,
+      "risk_level": "Rendah"
+    },
+    "Western Dress": {
+      "total_orders": 3738,
+      "cancelled_orders": 488,
+      "cancel_rate": 0.1306,
+      "risk_level": "Rendah"
+    }
+  },
+  "risk_by_region": {
+    "Andaman and Nicobar Islands": {
+      "total_orders": 79,
+      "cancelled_orders": 19,
+      "cancel_rate": 0.2405,
+      "risk_level": "Tinggi"
+    },
+    "Andhra Pradesh": {
+      "total_orders": 1679,
+      "cancelled_orders": 275,
+      "cancel_rate": 0.1638,
+      "risk_level": "Sedang"
+    },
+    "Arunachal Pradesh": {
+      "total_orders": 43,
+      "cancelled_orders": 11,
+      "cancel_rate": 0.2558,
+      "risk_level": "Tinggi"
+    },
+    "Assam": {
+      "total_orders": 641,
+      "cancelled_orders": 107,
+      "cancel_rate": 0.1669,
+      "risk_level": "Sedang"
+    },
+    "Bihar": {
+      "total_orders": 756,
+      "cancelled_orders": 135,
+      "cancel_rate": 0.1786,
+      "risk_level": "Sedang"
+    },
+    "Chandigarh": {
+      "total_orders": 102,
+      "cancelled_orders": 7,
+      "cancel_rate": 0.0686,
+      "risk_level": "Rendah"
+    },
+    "Chhattisgarh": {
+      "total_orders": 316,
+      "cancelled_orders": 40,
+      "cancel_rate": 0.1266,
+      "risk_level": "Rendah"
+    },
+    "Dadra and Nagar Haveli": {
+      "total_orders": 25,
+      "cancelled_orders": 5,
+      "cancel_rate": 0.2,
+      "risk_level": "Sedang"
+    },
+    "Delhi": {
+      "total_orders": 2347,
+      "cancelled_orders": 306,
+      "cancel_rate": 0.1304,
+      "risk_level": "Rendah"
+    },
+    "Goa": {
+      "total_orders": 408,
+      "cancelled_orders": 52,
+      "cancel_rate": 0.1275,
+      "risk_level": "Rendah"
+    },
+    "Gujarat": {
+      "total_orders": 1502,
+      "cancelled_orders": 205,
+      "cancel_rate": 0.1365,
+      "risk_level": "Rendah"
+    },
+    "Haryana": {
+      "total_orders": 1449,
+      "cancelled_orders": 211,
+      "cancel_rate": 0.1456,
+      "risk_level": "Rendah"
+    },
+    "Himachal Pradesh": {
+      "total_orders": 263,
+      "cancelled_orders": 37,
+      "cancel_rate": 0.1407,
+      "risk_level": "Rendah"
+    },
+    "Jammu and Kashmir": {
+      "total_orders": 250,
+      "cancelled_orders": 51,
+      "cancel_rate": 0.204,
+      "risk_level": "Tinggi"
+    },
+    "Jharkhand": {
+      "total_orders": 555,
+      "cancelled_orders": 97,
+      "cancel_rate": 0.1748,
+      "risk_level": "Sedang"
+    },
+    "Karnataka": {
+      "total_orders": 5554,
+      "cancelled_orders": 736,
+      "cancel_rate": 0.1325,
+      "risk_level": "Rendah"
+    },
+    "Kerala": {
+      "total_orders": 2119,
+      "cancelled_orders": 390,
+      "cancel_rate": 0.184,
+      "risk_level": "Sedang"
+    },
+    "Ladakh": {
+      "total_orders": 14,
+      "cancelled_orders": 1,
+      "cancel_rate": 0.0714,
+      "risk_level": "Rendah"
+    },
+    "Lakshadweep": {
+      "total_orders": 1,
+      "cancelled_orders": 0,
+      "cancel_rate": 0.0,
+      "risk_level": "Rendah"
+    },
+    "Madhya Pradesh": {
+      "total_orders": 795,
+      "cancelled_orders": 122,
+      "cancel_rate": 0.1535,
+      "risk_level": "Sedang"
+    },
+    "Maharashtra": {
+      "total_orders": 7355,
+      "cancelled_orders": 947,
+      "cancel_rate": 0.1288,
+      "risk_level": "Rendah"
+    },
+    "Manipur": {
+      "total_orders": 115,
+      "cancelled_orders": 16,
+      "cancel_rate": 0.1391,
+      "risk_level": "Rendah"
+    },
+    "Meghalaya": {
+      "total_orders": 72,
+      "cancelled_orders": 7,
+      "cancel_rate": 0.0972,
+      "risk_level": "Rendah"
+    },
+    "Mizoram": {
+      "total_orders": 22,
+      "cancelled_orders": 5,
+      "cancel_rate": 0.2273,
+      "risk_level": "Tinggi"
+    },
+    "Nagaland": {
+      "total_orders": 41,
+      "cancelled_orders": 8,
+      "cancel_rate": 0.1951,
+      "risk_level": "Sedang"
+    },
+    "Odisha": {
+      "total_orders": 729,
+      "cancelled_orders": 123,
+      "cancel_rate": 0.1687,
+      "risk_level": "Sedang"
+    },
+    "Puducherry": {
+      "total_orders": 114,
+      "cancelled_orders": 22,
+      "cancel_rate": 0.193,
+      "risk_level": "Sedang"
+    },
+    "Punjab": {
+      "total_orders": 658,
+      "cancelled_orders": 87,
+      "cancel_rate": 0.1322,
+      "risk_level": "Rendah"
+    },
+    "Rajasthan": {
+      "total_orders": 940,
+      "cancelled_orders": 139,
+      "cancel_rate": 0.1479,
+      "risk_level": "Rendah"
+    },
+    "Sikkim": {
+      "total_orders": 59,
+      "cancelled_orders": 8,
+      "cancel_rate": 0.1356,
+      "risk_level": "Rendah"
+    },
+    "Tamil Nadu": {
+      "total_orders": 3418,
+      "cancelled_orders": 480,
+      "cancel_rate": 0.1404,
+      "risk_level": "Rendah"
+    },
+    "Telangana": {
+      "total_orders": 3484,
+      "cancelled_orders": 534,
+      "cancel_rate": 0.1533,
+      "risk_level": "Sedang"
+    },
+    "Tripura": {
+      "total_orders": 57,
+      "cancelled_orders": 7,
+      "cancel_rate": 0.1228,
+      "risk_level": "Rendah"
+    },
+    "Uttar Pradesh": {
+      "total_orders": 3600,
+      "cancelled_orders": 533,
+      "cancel_rate": 0.1481,
+      "risk_level": "Rendah"
+    },
+    "Uttarakhand": {
+      "total_orders": 563,
+      "cancelled_orders": 84,
+      "cancel_rate": 0.1492,
+      "risk_level": "Rendah"
+    },
+    "West Bengal": {
+      "total_orders": 2218,
+      "cancelled_orders": 321,
+      "cancel_rate": 0.1447,
+      "risk_level": "Rendah"
+    }
+  },
+  "risk_by_fulfilment": {
+    "Amazon": {
+      "total_orders": 28142,
+      "cancelled_orders": 3623,
+      "cancel_rate": 0.1287,
+      "risk_level": "Rendah"
+    },
+    "Merchant": {
+      "total_orders": 14214,
+      "cancelled_orders": 2509,
+      "cancel_rate": 0.1765,
+      "risk_level": "Sedang"
+    }
+  },
+  "risk_by_price_tier": {
+    "< INR 300": {
+      "total_orders": 1102,
+      "cancelled_orders": 159,
+      "cancel_rate": 0.1443,
+      "risk_level": "Rendah"
+    },
+    "INR 300 - 600": {
+      "total_orders": 22131,
+      "cancelled_orders": 3236,
+      "cancel_rate": 0.1462,
+      "risk_level": "Rendah"
+    },
+    "INR 600 - 1000": {
+      "total_orders": 14666,
+      "cancelled_orders": 2120,
+      "cancel_rate": 0.1446,
+      "risk_level": "Rendah"
+    },
+    "> INR 1000": {
+      "total_orders": 4457,
+      "cancelled_orders": 617,
+      "cancel_rate": 0.1384,
+      "risk_level": "Rendah"
+    }
+  },
+  "risk_by_day_of_week": {
+    "Friday": {
+      "total_orders": 6654,
+      "cancelled_orders": 1017,
+      "cancel_rate": 0.1528,
+      "risk_level": "Sedang"
+    },
+    "Monday": {
+      "total_orders": 4795,
+      "cancelled_orders": 728,
+      "cancel_rate": 0.1518,
+      "risk_level": "Sedang"
+    },
+    "Saturday": {
+      "total_orders": 6675,
+      "cancelled_orders": 1007,
+      "cancel_rate": 0.1509,
+      "risk_level": "Sedang"
+    },
+    "Sunday": {
+      "total_orders": 5168,
+      "cancelled_orders": 697,
+      "cancel_rate": 0.1349,
+      "risk_level": "Rendah"
+    },
+    "Thursday": {
+      "total_orders": 6580,
+      "cancelled_orders": 963,
+      "cancel_rate": 0.1464,
+      "risk_level": "Rendah"
+    },
+    "Tuesday": {
+      "total_orders": 5967,
+      "cancelled_orders": 840,
+      "cancel_rate": 0.1408,
+      "risk_level": "Rendah"
+    },
+    "Wednesday": {
+      "total_orders": 6517,
+      "cancelled_orders": 880,
+      "cancel_rate": 0.135,
+      "risk_level": "Rendah"
+    }
+  }
+}

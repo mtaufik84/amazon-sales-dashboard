@@ -1,0 +1,181 @@
+{
+  "model_type": "LogisticRegression",
+  "intercept": -0.36727,
+  "coefficients": {
+    "unit_price": 0.00551,
+    "qty_imputed": -0.04125,
+    "day_of_week": 0.01757,
+    "is_weekend": -0.00027,
+    "day_of_month": 0.04104,
+    "Category_Blouse": -0.02596,
+    "Category_Bottom": -0.4647,
+    "Category_Ethnic Dress": 0.38086,
+    "Category_Kurta": -0.1891,
+    "Category_Saree": 0.2867,
+    "Category_Set": 0.22634,
+    "Category_Top": -0.49001,
+    "Category_Western Dress": 0.02514,
+    "Size_3XL": -0.20739,
+    "Size_4XL": -0.99781,
+    "Size_5XL": 0.2441,
+    "Size_6XL": 1.18161,
+    "Size_FREE": -0.36209,
+    "Size_L": -0.21288,
+    "Size_M": 0.0396,
+    "Size_S": -0.00063,
+    "Size_XL": -0.03715,
+    "Size_XS": 0.18206,
+    "Size_XXL": -0.08016,
+    "is_fba_0": 1.93519,
+    "is_fba_1": -2.18593,
+    "is_expedited_0": -1.02126,
+    "is_expedited_1": 0.77052,
+    "ship_state_clean_Andaman and Nicobar Islands": 1.24758,
+    "ship_state_clean_Andhra Pradesh": -0.01508,
+    "ship_state_clean_Arunachal Pradesh": 0.956,
+    "ship_state_clean_Assam": 0.3233,
+    "ship_state_clean_Bihar": 0.19958,
+    "ship_state_clean_Chandigarh": -0.6612,
+    "ship_state_clean_Chhattisgarh": -0.01187,
+    "ship_state_clean_Dadra and Nagar Haveli": 0.0587,
+    "ship_state_clean_Delhi": -0.67113,
+    "ship_state_clean_Goa": -0.45113,
+    "ship_state_clean_Gujarat": -0.73727,
+    "ship_state_clean_Haryana": -0.17771,
+    "ship_state_clean_Himachal Pradesh": 0.22988,
+    "ship_state_clean_Jammu and Kashmir": 0.46053,
+    "ship_state_clean_Jharkhand": 0.19705,
+    "ship_state_clean_Karnataka": -0.74192,
+    "ship_state_clean_Kerala": 0.13795,
+    "ship_state_clean_Ladakh": -0.14807,
+    "ship_state_clean_Lakshadweep": -0.01525,
+    "ship_state_clean_Madhya Pradesh": 0.44952,
+    "ship_state_clean_Maharashtra": -0.97845,
+    "ship_state_clean_Manipur": 0.69868,
+    "ship_state_clean_Meghalaya": -0.20386,
+    "ship_state_clean_Mizoram": 0.06802,
+    "ship_state_clean_Nagaland": 0.36287,
+    "ship_state_clean_Odisha": 0.55228,
+    "ship_state_clean_Puducherry": -0.08823,
+    "ship_state_clean_Punjab": 0.12204,
+    "ship_state_clean_Rajasthan": 0.23844,
+    "ship_state_clean_Sikkim": 0.31524,
+    "ship_state_clean_Tamil Nadu": -0.47572,
+    "ship_state_clean_Telangana": -0.63144,
+    "ship_state_clean_Tripura": -0.16346,
+    "ship_state_clean_Unknown": -0.08089,
+    "ship_state_clean_Uttar Pradesh": -0.28459,
+    "ship_state_clean_Uttarakhand": 0.0948,
+    "ship_state_clean_West Bengal": -0.42593,
+    "is_b2b_0": 0.1465,
+    "is_b2b_1": -0.39724,
+    "has_promotion_0": 3.11226,
+    "has_promotion_1": -3.363
+  },
+  "numerical_features": {
+    "unit_price": {
+      "mean": 634.9246,
+      "std": 255.4484
+    },
+    "qty_imputed": {
+      "mean": 1.0044,
+      "std": 0.1292
+    },
+    "day_of_week": {
+      "mean": 3.0609,
+      "std": 1.8996
+    },
+    "is_weekend": {
+      "mean": 0.2783,
+      "std": 0.4482
+    },
+    "day_of_month": {
+      "mean": 17.4979,
+      "std": 7.2875
+    }
+  },
+  "categorical_features": {
+    "Category": [
+      "Blouse",
+      "Bottom",
+      "Ethnic Dress",
+      "Kurta",
+      "Saree",
+      "Set",
+      "Top",
+      "Western Dress"
+    ],
+    "Size": [
+      "3XL",
+      "4XL",
+      "5XL",
+      "6XL",
+      "FREE",
+      "L",
+      "M",
+      "S",
+      "XL",
+      "XS",
+      "XXL"
+    ],
+    "is_fba": [
+      "0",
+      "1"
+    ],
+    "is_expedited": [
+      "0",
+      "1"
+    ],
+    "ship_state_clean": [
+      "Andaman and Nicobar Islands",
+      "Andhra Pradesh",
+      "Arunachal Pradesh",
+      "Assam",
+      "Bihar",
+      "Chandigarh",
+      "Chhattisgarh",
+      "Dadra and Nagar Haveli",
+      "Delhi",
+      "Goa",
+      "Gujarat",
+      "Haryana",
+      "Himachal Pradesh",
+      "Jammu and Kashmir",
+      "Jharkhand",
+      "Karnataka",
+      "Kerala",
+      "Ladakh",
+      "Lakshadweep",
+      "Madhya Pradesh",
+      "Maharashtra",
+      "Manipur",
+      "Meghalaya",
+      "Mizoram",
+      "Nagaland",
+      "Odisha",
+      "Puducherry",
+      "Punjab",
+      "Rajasthan",
+      "Sikkim",
+      "Tamil Nadu",
+      "Telangana",
+      "Tripura",
+      "Unknown",
+      "Uttar Pradesh",
+      "Uttarakhand",
+      "West Bengal"
+    ],
+    "is_b2b": [
+      "0",
+      "1"
+    ],
+    "has_promotion": [
+      "0",
+      "1"
+    ]
+  },
+  "thresholds": {
+    "low": 0.2,
+    "medium": 0.4
+  }
+}
