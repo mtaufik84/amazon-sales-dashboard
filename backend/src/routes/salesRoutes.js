@@ -12,6 +12,9 @@ function getCacheKey(endpoint, query) {
 }
 
 function setCache(key, data) {
+    if (!data) return;
+    if (Array.isArray(data) && data.length === 0) return;
+    if (data.totalRows === 0 && (!data.stats || data.stats.totalRows === 0)) return;
     if (responseCache.size > 200) {
         responseCache.clear();
     }

@@ -15,32 +15,51 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// Routes
-app.use('/api/sales', salesRoutes);
-app.use('/api/segments', segmentsRoutes);
-app.use('/api/recommendations', recommendationsRoutes);
+// Inisialisasi data sekali untuk lingkungan server maupun serverless
+let initPromise = null;
+function ensureDataReady() {
+    if (!initPromise) {
+        initPromise = Promise.all([loadData(), Promise.resolve(loadMLArtifacts())]);
+    }
+    return initPromise;
+}
 
-app.get('/api/health', (req, res) => {
+// Middleware: Tunggu inisialisasi data selesai sebelum melayani request apa pun
+app.use(async (req, res, next) => {
+    try {
+        await ensureDataReady();
+        next();
+    } catch (err) {
+        console.error('Data initialization error:', err);
+        res.status(500).json({ error: 'Gagal inisialisasi data: ' + err.message });
+    }
+});
+
+// Routes (Mendukung path dengan atau tanpa prefix /api untuk fleksibilitas Vercel rewrite)
+app.use('/api/sales', salesRoutes);
+app.use('/sales', salesRoutes);
+
+app.use('/api/segments', segmentsRoutes);
+app.use('/segments', segmentsRoutes);
+
+app.use('/api/recommendations', recommendationsRoutes);
+app.use('/recommendations', recommendationsRoutes);
+
+app.get(['/api/health', '/health'], (req, res) => {
     res.json({ status: 'OK', timestamp: new Date() });
 });
 
 async function startServer() {
     try {
-        await loadData();
-        loadMLArtifacts();
-        app.listen(PORT, () => {
-            console.log(`Backend Server berjalan aktif di http://localhost:${PORT}`);
-            console.log(`Endpoint data siap di http://localhost:${PORT}/api/sales/stats`);
-            console.log(`Endpoint Machine Learning siap:`);
-            console.log(` - Wilayah & Klaster: http://localhost:${PORT}/api/segments`);
-            console.log(` - GeoJSON Klaster:   http://localhost:${PORT}/api/segments/geojson`);
-            console.log(` - Rekomendasi:       http://localhost:${PORT}/api/recommendations`);
-            console.log(` - Rencana Stok:      http://localhost:${PORT}/api/recommendations/stock`);
-            console.log(` - Risiko Batal:      http://localhost:${PORT}/api/recommendations/cancel-risk`);
-        });
+        await ensureDataReady();
+        // Hanya listen jika tidak berada di lingkungan serverless Lambda/Vercel
+        if (!process.env.VERCEL) {
+            app.listen(PORT, () => {
+                console.log(`Backend Server berjalan aktif di http://localhost:${PORT}`);
+            });
+        }
     } catch (err) {
         console.error('Gagal menjalankan server:', err);
-        process.exit(1);
     }
 }
 

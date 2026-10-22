@@ -42,6 +42,35 @@ function parseDateString(dateStr) {
 }
 
 export async function loadData() {
+    // 1. Coba baca dari salesData.json (sangat cepat & andal untuk Serverless / Vercel)
+    const jsonPaths = [
+        path.join(__dirname, 'data', 'salesData.json'),
+        path.join(__dirname, '../data', 'salesData.json'),
+        path.join(__dirname, '../../data', 'salesData.json'),
+    ];
+    for (const jPath of jsonPaths) {
+        if (fs.existsSync(jPath)) {
+            try {
+                console.log(`Memuat dataset dari pre-parsed JSON: ${jPath}...`);
+                const raw = fs.readFileSync(jPath, 'utf8');
+                salesData = JSON.parse(raw);
+                salesDataById = new Map();
+                for (let i = 0; i < salesData.length; i++) {
+                    salesDataById.set(String(salesData[i].id), salesData[i]);
+                }
+                const months = [...new Set(salesData.map(i => i.month))].filter(Boolean).sort();
+                const categories = [...new Set(salesData.map(i => i.category))].filter(Boolean).sort();
+                const states = [...new Set(salesData.map(i => i.state))].filter(s => s && s !== 'UNKNOWN').sort();
+                cachedFilters = { months, categories, states };
+                console.log(`Berhasil memuat ${salesData.length} baris data dari JSON.`);
+                return salesData;
+            } catch (err) {
+                console.warn(`Gagal parse ${jPath}:`, err.message);
+            }
+        }
+    }
+
+    // 2. Fallback membaca CSV streaming
     return new Promise((resolve, reject) => {
         const candidatePaths = [
             process.env.DATA_PATH ? path.resolve(__dirname, '..', process.env.DATA_PATH) : null,
@@ -53,7 +82,7 @@ export async function loadData() {
         const csvPath = candidatePaths.find(p => fs.existsSync(p));
 
         if (!csvPath) {
-            reject(new Error(`CSV file tidak ditemukan di lokasi mana pun: ${candidatePaths.join(', ')}`));
+            reject(new Error(`File data tidak ditemukan di lokasi mana pun: ${candidatePaths.join(', ')}`));
             return;
         }
 
