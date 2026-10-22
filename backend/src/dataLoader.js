@@ -43,12 +43,17 @@ function parseDateString(dateStr) {
 
 export async function loadData() {
     return new Promise((resolve, reject) => {
-        const csvPath = process.env.DATA_PATH
-            ? path.resolve(__dirname, '..', process.env.DATA_PATH)
-            : path.join(__dirname, '../../data/Amazon Sale Report.csv');
+        const candidatePaths = [
+            process.env.DATA_PATH ? path.resolve(__dirname, '..', process.env.DATA_PATH) : null,
+            path.resolve(__dirname, '../data/Amazon_Sale_Report_Cleaned.csv'),
+            path.resolve(__dirname, '../../data/Amazon_Sale_Report_Cleaned.csv'),
+            path.resolve(__dirname, '../../data/Amazon Sale Report.csv'),
+        ].filter(Boolean);
 
-        if (!fs.existsSync(csvPath)) {
-            reject(new Error(`CSV file tidak ditemukan di: ${csvPath}`));
+        const csvPath = candidatePaths.find(p => fs.existsSync(p));
+
+        if (!csvPath) {
+            reject(new Error(`CSV file tidak ditemukan di lokasi mana pun: ${candidatePaths.join(', ')}`));
             return;
         }
 
