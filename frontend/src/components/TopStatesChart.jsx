@@ -2,6 +2,7 @@ import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell,
 } from 'recharts';
 import { formatINRCompact } from '../lib/format.js';
+import { TopStatesSkeleton } from './Skeletons.jsx';
 
 function CustomTooltip({ active, payload }) {
   if (!active || !payload.length) return null;
@@ -17,7 +18,7 @@ function CustomTooltip({ active, payload }) {
 
 export default function TopStatesChart({ data, loading }) {
   if (loading) {
-    return <div className="skeleton h-[280px] w-full rounded-lg" />;
+    return <TopStatesSkeleton />;
   }
 
   return (

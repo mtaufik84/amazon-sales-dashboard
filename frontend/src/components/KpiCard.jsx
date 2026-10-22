@@ -3,6 +3,8 @@ import { TrendingUp, TrendingDown } from 'lucide-react';
 import Sparkline from './Sparkline.jsx';
 import { formatINR, formatNumber, formatPercent } from '../lib/format.js';
 
+import { KpiCardSkeleton } from './Skeletons.jsx';
+
 function CountUp({ value, format }) {
   const [display, setDisplay] = useState(0);
   const frameRef = useRef();
@@ -34,14 +36,7 @@ function CountUp({ value, format }) {
 
 export default function KpiCard({ label, value, format, delta, sparkline, positive, loading }) {
   if (loading) {
-    return (
-      <div className="bg-surface border border-default rounded-lg p-5 space-y-3">
-        <div className="skeleton h-3 w-24 rounded" />
-        <div className="skeleton h-7 w-32 rounded" />
-        <div className="skeleton h-3 w-16 rounded" />
-        <div className="skeleton h-10 w-full rounded" />
-      </div>
-    );
+    return <KpiCardSkeleton />;
   }
 
   const isPositive = delta > 0;

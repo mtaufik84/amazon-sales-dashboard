@@ -99,11 +99,23 @@ export async function loadData() {
                     state: (row['ship-state'] || row['ship_state'] || 'UNKNOWN').toUpperCase(),
                     postalCode: row['ship-postal-code'] || row['ship_postal_code'] || '',
                     b2b: row['B2B'] === 'True' || row['B2B'] === true || row['b2b'] === 'True' || row['b2b'] === true,
+                    searchStr: `${row['Order ID'] || row['order_id'] || ''} ${row['SKU'] || row['sku'] || ''} ${row['ASIN'] || row['asin'] || ''} ${row['ship-city'] || row['ship_city'] || ''}`.toLowerCase(),
                 });
             })
             .on('end', () => {
                 salesData = results;
-                console.log(`Berhasil memuat ${salesData.length} baris data transaksi Amazon.`);
+                salesDataById = new Map();
+                for (let i = 0; i < salesData.length; i++) {
+                    salesDataById.set(String(salesData[i].id), salesData[i]);
+                }
+
+                // Precompute static filter options once
+                const months = [...new Set(salesData.map(i => i.month))].filter(Boolean).sort();
+                const categories = [...new Set(salesData.map(i => i.category))].filter(Boolean).sort();
+                const states = [...new Set(salesData.map(i => i.state))].filter(s => s && s !== 'UNKNOWN').sort();
+                cachedFilters = { months, categories, states };
+
+                console.log(`Berhasil memuat ${salesData.length} baris data transaksi Amazon (terindeks).`);
                 resolve(salesData);
             })
             .on('error', (err) => {
@@ -113,43 +125,73 @@ export async function loadData() {
     });
 }
 
+let salesDataById = new Map();
+let cachedFilters = { months: [], categories: [], states: [] };
+const filterCache = new Map();
+
 export function getAllData() {
     return salesData;
 }
 
+export function getDataById(id) {
+    return salesDataById.get(String(id)) || null;
+}
+
+export function getCachedFilters() {
+    return cachedFilters;
+}
+
 export function getFilteredData(filters = {}) {
+    const month = filters.month && filters.month !== 'all' ? filters.month : null;
+    const category = filters.category && filters.category !== 'All' && filters.category !== 'all' ? filters.category : null;
+    const status = filters.status && filters.status !== 'All' && filters.status !== 'all' ? filters.status : null;
+    const fulfilment = filters.fulfilment && filters.fulfilment !== 'All' && filters.fulfilment !== 'all' ? filters.fulfilment : null;
+    const state = filters.state && filters.state !== 'All' && filters.state !== 'all' ? filters.state : null;
+    const search = filters.search ? filters.search.toLowerCase().trim() : null;
+
+    // Jika tanpa filter, langsung gunakan dataset penuh tanpa alokasi baru
+    if (!month && !category && !status && !fulfilment && !state && !search) {
+        return salesData;
+    }
+
+    const cacheKey = `${month || ''}|${category || ''}|${status || ''}|${fulfilment || ''}|${state || ''}|${search || ''}`;
+    if (filterCache.has(cacheKey)) {
+        return filterCache.get(cacheKey);
+    }
+
     let filtered = salesData;
 
-    if (filters.month) {
-        filtered = filtered.filter(item => item.month === filters.month);
+    if (month) {
+        filtered = filtered.filter(item => item.month === month);
     }
-    if (filters.category && filters.category !== 'All') {
-        filtered = filtered.filter(item => item.category.toLowerCase() === filters.category.toLowerCase());
+    if (category) {
+        const catLower = category.toLowerCase();
+        filtered = filtered.filter(item => item.category.toLowerCase() === catLower);
     }
-    if (filters.status && filters.status !== 'All') {
-        if (filters.status === 'Cancelled') {
+    if (status) {
+        if (status === 'Cancelled') {
             filtered = filtered.filter(item => item.isCancelled);
-        } else if (filters.status === 'Delivered') {
+        } else if (status === 'Delivered') {
             filtered = filtered.filter(item => item.isDelivered);
-        } else if (filters.status === 'Shipped') {
+        } else if (status === 'Shipped') {
             filtered = filtered.filter(item => !item.isCancelled);
         }
     }
-    if (filters.fulfilment && filters.fulfilment !== 'All') {
-        filtered = filtered.filter(item => item.fulfilment.toLowerCase() === filters.fulfilment.toLowerCase());
+    if (fulfilment) {
+        const fulLower = fulfilment.toLowerCase();
+        filtered = filtered.filter(item => item.fulfilment.toLowerCase() === fulLower);
     }
-    if (filters.state && filters.state !== 'All') {
-        filtered = filtered.filter(item => item.state === filters.state);
+    if (state) {
+        filtered = filtered.filter(item => item.state === state);
     }
-    if (filters.search) {
-        const s = filters.search.toLowerCase();
-        filtered = filtered.filter(item =>
-            item.orderId.toLowerCase().includes(s) ||
-            item.sku.toLowerCase().includes(s) ||
-            item.asin.toLowerCase().includes(s) ||
-            item.city.toLowerCase().includes(s)
-        );
+    if (search) {
+        filtered = filtered.filter(item => item.searchStr.includes(search));
     }
+
+    if (filterCache.size > 50) {
+        filterCache.clear();
+    }
+    filterCache.set(cacheKey, filtered);
 
     return filtered;
 }

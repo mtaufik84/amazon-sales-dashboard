@@ -2,6 +2,7 @@ import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell,
 } from 'recharts';
 import { formatNumber, formatPercent } from '../lib/format.js';
+import { SizeHistogramSkeleton } from './Skeletons.jsx';
 
 function CustomTooltip({ active, payload }) {
   if (!active || !payload.length) return null;
@@ -17,7 +18,7 @@ function CustomTooltip({ active, payload }) {
 
 export default function SizeHistogram({ data, loading }) {
   if (loading) {
-    return <div className="skeleton h-[240px] w-full rounded-lg" />;
+    return <SizeHistogramSkeleton />;
   }
 
   return (

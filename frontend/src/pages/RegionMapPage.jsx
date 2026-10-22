@@ -106,9 +106,20 @@ export default function RegionMapPage() {
               <h3 className="text-sm font-medium text-primary-c">Ringkasan Cluster</h3>
               {loading && (
                 <div className="space-y-3">
-                  <div className="skeleton h-16 w-full rounded-lg" />
-                  <div className="skeleton h-16 w-full rounded-lg" />
-                  <div className="skeleton h-16 w-full rounded-lg" />
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="bg-surface border border-default rounded-lg p-4 space-y-2">
+                      <div className="flex items-center gap-2">
+                        <div className="skeleton w-3 h-3 rounded-full" />
+                        <div className="skeleton h-4 w-28 rounded" />
+                        <div className="skeleton h-3 w-16 rounded ml-auto" />
+                      </div>
+                      <div className="grid grid-cols-3 gap-2 pt-1">
+                        <div className="skeleton h-6 w-full rounded" />
+                        <div className="skeleton h-6 w-full rounded" />
+                        <div className="skeleton h-6 w-full rounded" />
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
               {!loading && Object.entries(clusters).map(([id, c]) => {

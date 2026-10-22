@@ -5,11 +5,8 @@ import FilterBar, { ActiveFilterChips } from '../components/FilterBar.jsx';
 import EmptyState from '../components/EmptyState.jsx';
 import { getFilterOptions, getAllSales } from '../services/api.js';
 
-// Paginasi server-side mengikuti versi lama: 100 baris per request ke /table,
-// user-halaman dipaginasi di dalamnya. Ukuran filter bulan dari app lama
-// dipertahankan; drat filter "Ukuran" referensi dihilangkan karena endpoint
-// /table tidak mendukung filter size.
-const PAGE_SIZE = 100;
+// Paginasi server-side: 25 baris per request ke /table agar ringan dan cepat di HP.
+const PAGE_SIZE = 25;
 const STATUS_OPTIONS = ['Shipped', 'Cancelled', 'Delivered'];
 const FULFILMENT_OPTIONS = ['Amazon', 'Merchant'];
 

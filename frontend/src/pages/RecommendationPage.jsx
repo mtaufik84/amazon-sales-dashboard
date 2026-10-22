@@ -148,10 +148,23 @@ export default function RecommendationPage() {
       {!error && activeTab === 'main' && (
         <div className="space-y-4 animate-fade-in">
           {loading ? (
-            <>
-              <div className="skeleton h-8 w-96 rounded-md" />
-              <div className="skeleton h-64 w-full rounded-lg" />
-            </>
+            <div className="space-y-4">
+              <div className="skeleton h-8 w-80 rounded-md" />
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="bg-surface border border-default rounded-lg p-5 space-y-3">
+                  <div className="flex justify-between items-center">
+                    <div className="skeleton h-4 w-40 rounded" />
+                    <div className="skeleton h-5 w-20 rounded-full" />
+                  </div>
+                  <div className="skeleton h-3 w-full rounded" />
+                  <div className="skeleton h-3 w-4/5 rounded" />
+                  <div className="flex gap-4 pt-2">
+                    <div className="skeleton h-3 w-28 rounded" />
+                    <div className="skeleton h-3 w-32 rounded" />
+                  </div>
+                </div>
+              ))}
+            </div>
           ) : (
             <>
               {/* Filters — pilar = kategori API, prioritas asli */}

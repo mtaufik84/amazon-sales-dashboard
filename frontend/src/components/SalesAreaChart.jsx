@@ -3,6 +3,7 @@ import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from 'recharts';
 import { formatDateShort, formatINRCompact } from '../lib/format.js';
+import { SalesChartSkeleton } from './Skeletons.jsx';
 
 function CustomTooltip({ active, payload, label }) {
   if (!active || !payload.length) return null;
@@ -31,7 +32,7 @@ export default function SalesAreaChart({ data, loading }) {
   const [showMA, setShowMA] = useState(false);
 
   if (loading) {
-    return <div className="skeleton h-[280px] w-full rounded-lg" />;
+    return <SalesChartSkeleton />;
   }
 
   return (

@@ -3,7 +3,7 @@ import axios from 'axios'
 // Salinan dari frontend/src/services/api.js (frontend lama) — logika dipertahankan.
 // Satu-satunya adaptasi: fallback URL menunjuk salinan backend di :5001,
 // bukan backend lama di :5000.
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api'
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api'
 
 const api = axios.create({
   baseURL: `${API_BASE_URL}/sales`,
@@ -39,6 +39,7 @@ mlApi.interceptors.response.use(
 )
 
 export const salesAPI = {
+  getOverview: (params) => api.get('/overview', { params }),
   getAll: (params) => api.get('/table', { params }),
   getById: (id) => api.get(`/${id}`),
   getStats: (params) => api.get('/stats', { params }),
@@ -50,6 +51,7 @@ export const salesAPI = {
 }
 
 // Wrapper aliases for Sales API
+export const getSalesOverview = (params) => salesAPI.getOverview(params)
 export const getAllSales = (params) => salesAPI.getAll(params)
 export const getSalesById = (id) => salesAPI.getById(id)
 export const getSalesStats = (params) => salesAPI.getStats(params)

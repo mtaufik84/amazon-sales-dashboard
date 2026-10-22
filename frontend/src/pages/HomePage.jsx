@@ -7,6 +7,7 @@ import TopStatesChart from '../components/TopStatesChart.jsx';
 import SizeHistogram from '../components/SizeHistogram.jsx';
 import FilterBar, { ActiveFilterChips } from '../components/FilterBar.jsx';
 import {
+  getSalesOverview,
   getSalesStats,
   getSalesTrends,
   getSalesCategories,
@@ -63,16 +64,34 @@ export default function HomePage() {
     status: { label: 'Status', value: 'all', options: STATUS_OPTIONS },
     fulfilment: { label: 'Fulfillment', value: 'all', options: FULFILMENT_OPTIONS },
   });
-  const [loading, setLoading] = useState(true);
+  
+  // Ambil cache instan dari sessionStorage jika ada (Stale-While-Revalidate)
+  const [salesData, setSalesData] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem('cached_dashboard_overview');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return {
+          stats: parsed.stats || null,
+          trends: parsed.trends || [],
+          categories: parsed.categories || [],
+          geo: parsed.geo || [],
+          sizes: parsed.breakdown?.sizes || [],
+        };
+      }
+    } catch (_) {}
+    return {
+      stats: null,
+      trends: [],
+      categories: [],
+      geo: [],
+      sizes: [],
+    };
+  });
+
+  const [loading, setLoading] = useState(() => !salesData.stats);
   const [error, setError] = useState(null);
   const [refreshKey, setRefreshKey] = useState(0);
-  const [salesData, setSalesData] = useState({
-    stats: null,
-    trends: [],
-    categories: [],
-    geo: [],
-    sizes: [],
-  });
 
   // Pertahankan perilaku lama: debounce search 300 ms sebelum fetch.
   useEffect(() => {
@@ -93,35 +112,62 @@ export default function HomePage() {
       .catch((err) => console.error('Gagal memuat opsi filter:', err));
   }, []);
 
-  // Fetch 5 endpoint paralel dengan filter aktif — perilaku Dashboard lama.
+  // Fetch data dashboard melalui 1 request tunggal /overview (Sangat cepat di HP)
   useEffect(() => {
-    const controller = new AbortController();
+    let alive = true;
     const params = apiParams(filters, debouncedSearch);
-    setLoading(true);
+    if (!salesData.stats) {
+      setLoading(true);
+    }
     setError(null);
-    Promise.all([
-      getSalesStats(params),
-      getSalesTrends(params),
-      getSalesCategories(params),
-      getSalesGeo(params),
-      getSalesBreakdown(params),
-    ])
-      .then(([stats, trends, categories, geo, breakdown]) => {
+
+    getSalesOverview(params)
+      .then((data) => {
+        if (!alive) return;
         setSalesData({
-          stats,
-          trends: trends || [],
-          categories: categories || [],
-          geo: geo || [],
-          sizes: breakdown?.sizes || [],
+          stats: data.stats || null,
+          trends: data.trends || [],
+          categories: data.categories || [],
+          geo: data.geo || [],
+          sizes: data.breakdown?.sizes || [],
         });
+        try {
+          if (!params.month && !params.category && !params.status && !params.fulfilment && !params.search) {
+            sessionStorage.setItem('cached_dashboard_overview', JSON.stringify(data));
+          }
+        } catch (_) {}
       })
       .catch((err) => {
-        if (err?.code === 'ERR_CANCELED') return;
-        console.error('Gagal memuat dashboard:', err);
-        setError('Data dashboard tidak dapat dimuat. Pastikan backend berjalan.');
+        if (!alive) return;
+        // Fallback ke Promise.all jika endpoint /overview belum terdeteksi
+        Promise.all([
+          getSalesStats(params),
+          getSalesTrends(params),
+          getSalesCategories(params),
+          getSalesGeo(params),
+          getSalesBreakdown(params),
+        ])
+          .then(([stats, trends, categories, geo, breakdown]) => {
+            if (!alive) return;
+            setSalesData({
+              stats,
+              trends: trends || [],
+              categories: categories || [],
+              geo: geo || [],
+              sizes: breakdown?.sizes || [],
+            });
+          })
+          .catch((error) => {
+            if (!alive) return;
+            console.error('Gagal memuat dashboard:', error);
+            setError('Data dashboard tidak dapat dimuat. Pastikan backend berjalan.');
+          });
       })
-      .finally(() => setLoading(false));
-    return () => controller.abort();
+      .finally(() => {
+        if (alive) setLoading(false);
+      });
+
+    return () => { alive = false; };
   }, [filters.month.value, filters.category.value, filters.status.value,
       filters.fulfilment.value, debouncedSearch, refreshKey]);
 

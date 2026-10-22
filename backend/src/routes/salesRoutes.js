@@ -1,19 +1,163 @@
 import express from 'express';
-import { getFilteredData, getAllData } from '../dataLoader.js';
+import { getFilteredData, getAllData, getCachedFilters, getDataById } from '../dataLoader.js';
 
 const router = express.Router();
 
-// 1. GET /api/sales/stats - Metrik KPI Ringkasan
+// In-memory cache untuk response endpoint berdasarkan query parameter
+const responseCache = new Map();
+
+function getCacheKey(endpoint, query) {
+    const keys = Object.keys(query).filter(k => query[k] && query[k] !== 'all' && query[k] !== 'All').sort();
+    return `${endpoint}:${keys.map(k => `${k}=${query[k]}`).join('&')}`;
+}
+
+function setCache(key, data) {
+    if (responseCache.size > 200) {
+        responseCache.clear();
+    }
+    responseCache.set(key, data);
+}
+
+// Single-pass computation: menghitung stats, trends, categories, geo, dan breakdown dalam 1 perulangan loop
+function computeAllMetrics(data) {
+    let totalRevenue = 0;
+    let totalQty = 0;
+    let cancelledOrders = 0;
+    let b2bOrders = 0;
+    const orderIdSet = new Set();
+    const trendMap = {};
+    const catMap = {};
+    const stateMap = {};
+    const fulfilmentMap = {};
+    const sizeMap = {};
+
+    for (let i = 0; i < data.length; i++) {
+        const item = data[i];
+        const amount = item.amount;
+        const qty = item.qty;
+
+        totalRevenue += amount;
+        totalQty += qty;
+        if (item.isCancelled) cancelledOrders++;
+        if (item.b2b) b2bOrders++;
+        orderIdSet.add(item.orderId);
+
+        if (item.date) {
+            let tEntry = trendMap[item.date];
+            if (!tEntry) {
+                tEntry = trendMap[item.date] = { date: item.date, revenue: 0, qty: 0, orders: 0 };
+            }
+            tEntry.revenue += amount;
+            tEntry.qty += qty;
+            tEntry.orders += 1;
+        }
+
+        const cat = item.category || 'Other';
+        let cEntry = catMap[cat];
+        if (!cEntry) {
+            cEntry = catMap[cat] = { category: cat, revenue: 0, qty: 0, count: 0 };
+        }
+        cEntry.revenue += amount;
+        cEntry.qty += qty;
+        cEntry.count += 1;
+
+        const state = item.state && item.state !== 'UNKNOWN' ? item.state : 'Other';
+        let sEntry = stateMap[state];
+        if (!sEntry) {
+            sEntry = stateMap[state] = { state, revenue: 0, orders: 0 };
+        }
+        sEntry.revenue += amount;
+        sEntry.orders += 1;
+
+        const f = item.fulfilment === 'Amazon' ? 'Amazon FBA' : 'Merchant (Easy Ship)';
+        let fEntry = fulfilmentMap[f];
+        if (!fEntry) {
+            fEntry = fulfilmentMap[f] = { name: f, count: 0, revenue: 0 };
+        }
+        fEntry.count += 1;
+        fEntry.revenue += amount;
+
+        const s = (item.size || 'Other').trim().toUpperCase();
+        if (s && s !== 'UNKNOWN') {
+            let szEntry = sizeMap[s];
+            if (!szEntry) {
+                szEntry = sizeMap[s] = { size: s, qty: 0, revenue: 0 };
+            }
+            szEntry.qty += qty;
+            szEntry.revenue += amount;
+        }
+    }
+
+    const totalOrders = orderIdSet.size;
+    const stats = {
+        totalRevenue: Math.round(totalRevenue),
+        totalQty,
+        totalOrders,
+        avgOrderValue: totalOrders > 0 ? Math.round(totalRevenue / totalOrders) : 0,
+        cancellationRate: data.length > 0 ? Number(((cancelledOrders / data.length) * 100).toFixed(1)) : 0,
+        b2bCount: b2bOrders,
+        totalRows: data.length,
+    };
+
+    const trends = Object.values(trendMap).sort((a, b) => a.date.localeCompare(b.date));
+    const categories = Object.values(catMap).sort((a, b) => b.revenue - a.revenue);
+    const geo = Object.values(stateMap).sort((a, b) => b.revenue - a.revenue).slice(0, 10);
+    const fulfilment = Object.values(fulfilmentMap);
+    const sizes = Object.values(sizeMap).sort((a, b) => b.qty - a.qty).slice(0, 7);
+
+    return {
+        stats,
+        trends,
+        categories,
+        geo,
+        breakdown: { fulfilment, sizes }
+    };
+}
+
+// 0. GET /api/sales/overview - Semua data dashboard dalam 1 request jaringan (Sangat cepat di HP)
+router.get('/overview', (req, res) => {
+    try {
+        const cacheKey = getCacheKey('overview', req.query);
+        if (responseCache.has(cacheKey)) {
+            return res.json(responseCache.get(cacheKey));
+        }
+
+        const data = getFilteredData(req.query);
+        const result = computeAllMetrics(data);
+
+        setCache(cacheKey, result);
+        res.json(result);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// 1. GET /api/sales/stats - Metrik KPI Ringkasan (Single-pass loop)
 router.get('/stats', (req, res) => {
     try {
-        const data = getFilteredData(req.query);
-        const totalRevenue = data.reduce((sum, item) => sum + item.amount, 0);
-        const totalQty = data.reduce((sum, item) => sum + item.qty, 0);
-        const totalOrders = new Set(data.map(i => i.orderId)).size;
-        const cancelledOrders = data.filter(i => i.isCancelled).length;
-        const b2bOrders = data.filter(i => i.b2b).length;
+        const cacheKey = getCacheKey('stats', req.query);
+        if (responseCache.has(cacheKey)) {
+            return res.json(responseCache.get(cacheKey));
+        }
 
-        res.json({
+        const data = getFilteredData(req.query);
+        let totalRevenue = 0;
+        let totalQty = 0;
+        let cancelledOrders = 0;
+        let b2bOrders = 0;
+        const orderIdSet = new Set();
+
+        for (let i = 0; i < data.length; i++) {
+            const item = data[i];
+            totalRevenue += item.amount;
+            totalQty += item.qty;
+            if (item.isCancelled) cancelledOrders++;
+            if (item.b2b) b2bOrders++;
+            orderIdSet.add(item.orderId);
+        }
+
+        const totalOrders = orderIdSet.size;
+        const result = {
             totalRevenue: Math.round(totalRevenue),
             totalQty,
             totalOrders,
@@ -21,7 +165,10 @@ router.get('/stats', (req, res) => {
             cancellationRate: data.length > 0 ? Number(((cancelledOrders / data.length) * 100).toFixed(1)) : 0,
             b2bCount: b2bOrders,
             totalRows: data.length,
-        });
+        };
+
+        setCache(cacheKey, result);
+        res.json(result);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -30,20 +177,28 @@ router.get('/stats', (req, res) => {
 // 2. GET /api/sales/trends - Tren Penjualan Harian/Bulanan
 router.get('/trends', (req, res) => {
     try {
+        const cacheKey = getCacheKey('trends', req.query);
+        if (responseCache.has(cacheKey)) {
+            return res.json(responseCache.get(cacheKey));
+        }
+
         const data = getFilteredData(req.query);
         const trendMap = {};
 
-        data.forEach(item => {
-            if (!item.date) return;
-            if (!trendMap[item.date]) {
-                trendMap[item.date] = { date: item.date, revenue: 0, qty: 0, orders: 0 };
+        for (let i = 0; i < data.length; i++) {
+            const item = data[i];
+            if (!item.date) continue;
+            let entry = trendMap[item.date];
+            if (!entry) {
+                entry = trendMap[item.date] = { date: item.date, revenue: 0, qty: 0, orders: 0 };
             }
-            trendMap[item.date].revenue += item.amount;
-            trendMap[item.date].qty += item.qty;
-            trendMap[item.date].orders += 1;
-        });
+            entry.revenue += item.amount;
+            entry.qty += item.qty;
+            entry.orders += 1;
+        }
 
         const trends = Object.values(trendMap).sort((a, b) => a.date.localeCompare(b.date));
+        setCache(cacheKey, trends);
         res.json(trends);
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -53,20 +208,28 @@ router.get('/trends', (req, res) => {
 // 3. GET /api/sales/categories - Breakdown Kategori Produk
 router.get('/categories', (req, res) => {
     try {
+        const cacheKey = getCacheKey('categories', req.query);
+        if (responseCache.has(cacheKey)) {
+            return res.json(responseCache.get(cacheKey));
+        }
+
         const data = getFilteredData(req.query);
         const catMap = {};
 
-        data.forEach(item => {
+        for (let i = 0; i < data.length; i++) {
+            const item = data[i];
             const cat = item.category || 'Other';
-            if (!catMap[cat]) {
-                catMap[cat] = { category: cat, revenue: 0, qty: 0, count: 0 };
+            let entry = catMap[cat];
+            if (!entry) {
+                entry = catMap[cat] = { category: cat, revenue: 0, qty: 0, count: 0 };
             }
-            catMap[cat].revenue += item.amount;
-            catMap[cat].qty += item.qty;
-            catMap[cat].count += 1;
-        });
+            entry.revenue += item.amount;
+            entry.qty += item.qty;
+            entry.count += 1;
+        }
 
         const categories = Object.values(catMap).sort((a, b) => b.revenue - a.revenue);
+        setCache(cacheKey, categories);
         res.json(categories);
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -76,22 +239,30 @@ router.get('/categories', (req, res) => {
 // 4. GET /api/sales/geo - Distribusi Negara Bagian (Top 10 States)
 router.get('/geo', (req, res) => {
     try {
+        const cacheKey = getCacheKey('geo', req.query);
+        if (responseCache.has(cacheKey)) {
+            return res.json(responseCache.get(cacheKey));
+        }
+
         const data = getFilteredData(req.query);
         const stateMap = {};
 
-        data.forEach(item => {
+        for (let i = 0; i < data.length; i++) {
+            const item = data[i];
             const state = item.state && item.state !== 'UNKNOWN' ? item.state : 'Other';
-            if (!stateMap[state]) {
-                stateMap[state] = { state, revenue: 0, orders: 0 };
+            let entry = stateMap[state];
+            if (!entry) {
+                entry = stateMap[state] = { state, revenue: 0, orders: 0 };
             }
-            stateMap[state].revenue += item.amount;
-            stateMap[state].orders += 1;
-        });
+            entry.revenue += item.amount;
+            entry.orders += 1;
+        }
 
         const states = Object.values(stateMap)
             .sort((a, b) => b.revenue - a.revenue)
             .slice(0, 10);
 
+        setCache(cacheKey, states);
         res.json(states);
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -101,45 +272,49 @@ router.get('/geo', (req, res) => {
 // 4b. GET /api/sales/breakdown - Visualisasi Fulfillment & Ukuran Produk
 router.get('/breakdown', (req, res) => {
     try {
-        const data = getFilteredData(req.query);
+        const cacheKey = getCacheKey('breakdown', req.query);
+        if (responseCache.has(cacheKey)) {
+            return res.json(responseCache.get(cacheKey));
+        }
 
+        const data = getFilteredData(req.query);
         const fulfilmentMap = {};
         const sizeMap = {};
 
-        data.forEach(item => {
+        for (let i = 0; i < data.length; i++) {
+            const item = data[i];
             const f = item.fulfilment === 'Amazon' ? 'Amazon FBA' : 'Merchant (Easy Ship)';
-            if (!fulfilmentMap[f]) fulfilmentMap[f] = { name: f, count: 0, revenue: 0 };
-            fulfilmentMap[f].count += 1;
-            fulfilmentMap[f].revenue += item.amount;
+            let fEntry = fulfilmentMap[f];
+            if (!fEntry) fEntry = fulfilmentMap[f] = { name: f, count: 0, revenue: 0 };
+            fEntry.count += 1;
+            fEntry.revenue += item.amount;
 
             const s = (item.size || 'Other').trim().toUpperCase();
             if (s && s !== 'UNKNOWN') {
-                if (!sizeMap[s]) sizeMap[s] = { size: s, qty: 0, revenue: 0 };
-                sizeMap[s].qty += item.qty;
-                sizeMap[s].revenue += item.amount;
+                let sEntry = sizeMap[s];
+                if (!sEntry) sEntry = sizeMap[s] = { size: s, qty: 0, revenue: 0 };
+                sEntry.qty += item.qty;
+                sEntry.revenue += item.amount;
             }
-        });
+        }
 
         const fulfilment = Object.values(fulfilmentMap);
         const sizes = Object.values(sizeMap)
             .sort((a, b) => b.qty - a.qty)
             .slice(0, 7);
 
-        res.json({ fulfilment, sizes });
+        const result = { fulfilment, sizes };
+        setCache(cacheKey, result);
+        res.json(result);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
 
-// 5. GET /api/sales/filters - Opsi Filter Dinamis
+// 5. GET /api/sales/filters - Opsi Filter Dinamis (Instan dari precomputed cache)
 router.get('/filters', (req, res) => {
     try {
-        const allData = getAllData();
-        const months = [...new Set(allData.map(i => i.month))].filter(Boolean).sort();
-        const categories = [...new Set(allData.map(i => i.category))].filter(Boolean).sort();
-        const states = [...new Set(allData.map(i => i.state))].filter(s => s && s !== 'UNKNOWN').sort();
-
-        res.json({ months, categories, states });
+        res.json(getCachedFilters());
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -151,8 +326,8 @@ router.get('/table', (req, res) => {
         const { page = 1, limit = 20 } = req.query;
         const data = getFilteredData(req.query);
 
-        const pageNum = parseInt(page);
-        const limitNum = parseInt(limit);
+        const pageNum = Math.max(1, parseInt(page) || 1);
+        const limitNum = Math.max(1, parseInt(limit) || 20);
         const start = (pageNum - 1) * limitNum;
         const paginated = data.slice(start, start + limitNum);
 
@@ -167,17 +342,13 @@ router.get('/table', (req, res) => {
     }
 });
 
-// 7. GET /api/sales/:id - Detail Transaksi berdasarkan ID
+// 7. GET /api/sales/:id - Detail Transaksi berdasarkan ID (O(1) Map lookup)
 router.get('/:id', (req, res) => {
     try {
-        const { id } = req.params;
-        const allData = getAllData();
-        const item = allData.find(i => String(i.id) === String(id));
-
+        const item = getDataById(req.params.id);
         if (!item) {
-            return res.status(404).json({ error: 'Data not found', id });
+            return res.status(404).json({ error: 'Data not found', id: req.params.id });
         }
-
         res.json(item);
     } catch (error) {
         res.status(500).json({ error: error.message });
