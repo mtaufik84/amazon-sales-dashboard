@@ -29,10 +29,3 @@ __pycache__/
 *.pyo
 .python-version
 
-# Dokumen internal workflow
-uiRedesign.md
-
-# Cloudflare Tunnel (kredensial lokal)
-cloudflared-config.yml
-sales-dashboard-tunnel.md
-.cloudflared/
