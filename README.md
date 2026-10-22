@@ -115,4 +115,4 @@ lalu restart backend.
 - **Frontend:** React 18, Vite 5, Tailwind CSS, Recharts, Lucide Icons, React Router
 - **Backend:** Node.js (Express, csv-parse, dotenv)
 - **ML:** Python (scikit-learn, pandas) — K-Means, Logistic Regression & Random Forest
-- **Dataset:** Amazon India Sales Report, Q2 2022 · 42.357 baris · 26 hari aktif (5–30 Apr 2022)
+- **Dataset:** [Amazon India Sales Report, Q2 2022](https://www.kaggle.com/datasets/thedevastator/unlock-profits-with-e-commerce-sales-data?select=Amazon+Sale+Report.csv) 
